@@ -45,7 +45,7 @@ public class User {
     private Long kakaoId;
 
 //    @OneToMany(mappedBy = "user")
-//    private List<Post> post;
+//    private List<Post> post; test
 
 
 
