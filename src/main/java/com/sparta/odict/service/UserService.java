@@ -1,12 +1,14 @@
 package com.sparta.odict.service;
 
+import com.sparta.odict.dto.RefreshTokenDto;
 import com.sparta.odict.dto.SignupRequestDto;
-import com.sparta.odict.dto.UserRequestDto;
 import com.sparta.odict.exception.CustomException;
 import com.sparta.odict.exception.ErrorCode;
 import com.sparta.odict.model.User;
 import com.sparta.odict.model.UserRoleEnum;
 import com.sparta.odict.repository.UserRepository;
+import com.sparta.odict.security.jwt.JwtDecoder;
+import com.sparta.odict.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.regex.Pattern;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtDecoder jwtDecoder;
     private static final String ADMIN_TOKEN = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public void registerUser(SignupRequestDto requestDto) {
@@ -28,8 +31,7 @@ public class UserService {
         String nickname = requestDto.getNickname();
         String pwd = requestDto.getPwd();
         String pwdCheck = requestDto.getPwdCheck();
-        String profileImage = requestDto.getProfileImage();
-        String age = requestDto.getAge();
+        String generation = requestDto.getGeneration();
         Long postCount = 0L;
 
         UserRoleEnum role = UserRoleEnum.USER;
@@ -49,7 +51,7 @@ public class UserService {
 
         // 패스워드 암호화
         String enPassword = passwordEncoder.encode(requestDto.getPwd());
-        User user = new User(username, nickname, enPassword, age, profileImage, postCount, role);
+        User user = new User(username, nickname, enPassword, generation, postCount, role);
         userRepository.save(user); // DB 저장
 
     }
@@ -106,15 +108,11 @@ public class UserService {
         }
     }
 
-    public User userLogin(UserRequestDto userRequestDto) {
-        User user = userRepository.findByUsername(userRequestDto.getUsername()).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_USER_ID)
-        );
-
-        // 패스워드 암호화
-        if (!passwordEncoder.matches(userRequestDto.getPwd(), user.getPwd())) {
-            throw new CustomException(ErrorCode.NOT_FOUND_USER_ID);
-        }
-        return user;
+    public String validateToken(RefreshTokenDto refreshTokenDto) {
+        String username = jwtDecoder.decodeUsername(refreshTokenDto.getRefreshToken());
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 사용자가 없습니다."));
+        return JwtTokenUtils.generateJwtToken(user);
     }
 }
+

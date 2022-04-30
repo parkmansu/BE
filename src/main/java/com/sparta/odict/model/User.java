@@ -28,11 +28,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(nullable = false)
-    private String age;
-
-    @Column(nullable = false)
-    private String profileImage;
+    @Column
+    private String generation;
 
     @Column
     private Long postCount;
@@ -44,28 +41,22 @@ public class User {
     @Column(unique = true)
     private Long kakaoId;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Post> post; test
 
-
-
-    public User(String username, String nickname, String enPassword, String age, String profileImage, Long postCount, UserRoleEnum role) {
+    public User(String username, String nickname, String enPassword, String generation, Long postCount, UserRoleEnum role) {
         this.username = username;
         this.nickname = nickname;
         this.pwd = enPassword;
-        this.age = age;
-        this.profileImage = profileImage;
+        this.generation = generation;
         this.postCount = postCount;
         this.role = role;
         this.kakaoId = null;
     }
 
-    public User(String username, String nickname, String enPassword, String age, String profileImage, Long postCount, UserRoleEnum role, Long kakaoId) {
+    public User(String username, String nickname, String enPassword, String generation, Long postCount, UserRoleEnum role, Long kakaoId) {
         this.username = username;
         this.nickname = nickname;
         this.pwd = enPassword;
-        this.age = age;
-        this.profileImage = profileImage;
+        this.generation = generation;
         this.postCount = postCount;
         this.role = role;
         this.kakaoId = kakaoId;

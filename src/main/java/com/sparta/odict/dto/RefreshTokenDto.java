@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserRequestDto {
-    private String username;
-    private String pwd;
+public class RefreshTokenDto {
+    private String refreshToken;
 }

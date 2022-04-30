@@ -2,8 +2,7 @@ package com.sparta.odict.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.sparta.odict.security.UserDetailsImpl;
-
+import com.sparta.odict.model.User;
 import java.util.Date;
 
 public final class JwtTokenUtils {
@@ -18,28 +17,57 @@ public final class JwtTokenUtils {
     // JWT 토큰의 유효기간: 3일 (단위: milliseconds)
     private static final int JWT_TOKEN_VALID_MILLI_SEC = JWT_TOKEN_VALID_SEC * 1000;
 
+    // JWT 토큰의 유효기간: 7일 (단위: seconds)
+    private static final int REFRESH_TOKEN_VALID_SEC = 7 * DAY;
+    // JWT 토큰의 유효기간: 7일 (단위: milliseconds)
+    private static final int REFRESH_TOKEN_VALID_MILLI_SEC = REFRESH_TOKEN_VALID_SEC * 1000;
+
     public static final String CLAIM_EXPIRED_DATE = "EXPIRED_DATE";
     public static final String CLAIM_USER_NAME = "USER_NAME";
     public static final String UID = "UID";
     public static final String NICKNAME = "NICKNAME";
     public static final String JWT_SECRET = "jwt_secret_!@#$%";
 
-    public static String generateJwtToken(UserDetailsImpl userDetails) {
-        String token = null;
+
+    public static String generateJwtToken(User user) {
+        String accessToken = null;
+
+
         try {
-            token = JWT.create()
+            accessToken = JWT.create()
                     .withIssuer("sparta")
-                    .withClaim(CLAIM_USER_NAME, userDetails.getUsername())
+                    .withClaim(CLAIM_USER_NAME, user.getUsername())
                      // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
                     .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))
-                    .withClaim(UID, userDetails.getUser().getId())
-                    .withClaim(NICKNAME, userDetails.getUser().getNickname())
+                    .withClaim(UID, user.getId())
+                    .withClaim(NICKNAME, user.getNickname())
                     .sign(generateAlgorithm());
+            System.out.println("accessToken 생성 : "+ accessToken);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return accessToken;
+    }
+
+    public static String generateRefreshToken(User user) {
+
+        String refreshToken = null;
+
+        try {
+            refreshToken = JWT.create()
+                    .withIssuer("sparta")
+                    .withClaim(CLAIM_USER_NAME, user.getUsername())
+                    // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
+                    .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_MILLI_SEC))
+                    .withClaim(UID, user.getId())
+                    .withClaim(NICKNAME, user.getNickname())
+                    .sign(generateAlgorithm());
+            System.out.println("refreshToken 생성 : "+ refreshToken);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        return token;
+        return refreshToken;
     }
 
     private static Algorithm generateAlgorithm() {

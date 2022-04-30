@@ -14,8 +14,7 @@ public class SignupRequestDto {
     private String pwd;
     private String pwdCheck;
     private String nickname;
-    private String age;
-    private String profileImage;
+    private String generation;
     private boolean admin = false;
     private String adminToken = "";
 }

@@ -25,6 +25,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,11 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-    // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
+        // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         web
                 .ignoring()
                 .antMatchers("/h2-console/**")
-                .antMatchers("/auth/**");
+                .antMatchers("/oauth/**");
     }
 
     @Override
@@ -76,10 +77,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll() // preflight 대응
-                .antMatchers("/auth/**").permitAll(); // /auth/**에 대한 접근을 인증 절차 없이 허용(로그인 관련 url)
-                // 특정 권한을 가진 사용자만 접근을 허용해야 할 경우, 하기 항목을 통해 가능
-                //.antMatchers("/admin/**").hasAnyRole("ADMIN");
-
+                .antMatchers("/oauth/**").permitAll(); // /auth/**에 대한 접근을 인증 절차 없이 허용(로그인 관련 url)
+        // 특정 권한을 가진 사용자만 접근을 허용해야 할 경우, 하기 항목을 통해 가능
+        //.antMatchers("/admin/**").hasAnyRole("ADMIN");
 
 
         http
@@ -98,7 +98,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          */
         http
                 .addFilterBefore(formLoginFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling();
 
         http.authorizeRequests()
                 // 회원 관리 처리 API 전부를 login 없이 허용
@@ -150,8 +151,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         skipPathList.add("GET,/image/**");
         skipPathList.add("GET,/");
-
-
 
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(

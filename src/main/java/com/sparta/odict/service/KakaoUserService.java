@@ -3,11 +3,13 @@ package com.sparta.odict.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.odict.dto.KakaoGenerationDto;
 import com.sparta.odict.dto.KakaoUserInfoDto;
 import com.sparta.odict.model.User;
 import com.sparta.odict.model.UserRoleEnum;
 import com.sparta.odict.repository.UserRepository;
 import com.sparta.odict.security.UserDetailsImpl;
+import com.sparta.odict.security.UserDetailsServiceImpl;
 import com.sparta.odict.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -24,6 +26,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -33,7 +37,9 @@ public class KakaoUserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+
+    public List<String> kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -60,7 +66,7 @@ public class KakaoUserService {
         body.add("grant_type", "authorization_code");
         // 클라이언트 아이디, url 확인
         body.add("client_id", "6f05e336898a8b021c45ac7c1f8770b8");
-        body.add("redirect_uri", "http://localhost:8080/oauth/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -105,10 +111,11 @@ public class KakaoUserService {
                 .get("nickname").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
-        String age = jsonNode.get("kakao_account")
-                .get("age_range").asText();
+//        String age = jsonNode.get("kakao_account")
+//                .get("age_range").asText();
+                //.get("birthyear").asText();
 
-        return new KakaoUserInfoDto(id, nickname, email, age);
+        return new KakaoUserInfoDto(id, nickname, email);
     }
 
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -133,29 +140,40 @@ public class KakaoUserService {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
-            //연령대
-            String age = kakaoUserInfo.getAge();
-            System.out.println(age);
 
-            kakaoUser = new User(kakaoUsername, kakaoNickname, encodedPassword, age, null, 0L, UserRoleEnum.USER, kakaoId);
+            kakaoUser = new User(kakaoUsername, kakaoNickname, encodedPassword, null, 0L, UserRoleEnum.USER, kakaoId);
             userRepository.save(kakaoUser);
         }
         return kakaoUser;
     }
 
     //강제 로그인
-    private String jwtTokenCreate(User kakaoUser) {
-        String TOKEN_TYPE = "BEARER";
+    private List<String> jwtTokenCreate(User kakaoUser) {
 
         UserDetails userDetails = new UserDetailsImpl(kakaoUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserDetailsImpl userDetails1 = ((UserDetailsImpl) authentication.getPrincipal());
+        UserDetailsImpl kakaoUserDetails = ((UserDetailsImpl) authentication.getPrincipal());
 
-        System.out.println("userDetails1 : " + userDetails1.toString());
+        System.out.println("kakaoUserDetails : " + kakaoUserDetails.toString());
 
-        final String token = JwtTokenUtils.generateJwtToken(userDetails1);
-        return TOKEN_TYPE + " " + token;
+        final String accessToken = JwtTokenUtils.generateJwtToken(kakaoUserDetails.getUser());
+        final String refreshtoken = userDetailsServiceImpl.saveRefershToken(kakaoUserDetails.getUser());
+
+        List<String> tokens = new ArrayList<>();
+        tokens.add(accessToken);
+        tokens.add(refreshtoken);
+
+        return tokens;
+    }
+
+    public void userGeneration(KakaoGenerationDto kakaoGenerationDto, User user) {
+        User kakaoUser = userRepository.findById(user.getId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저는 없습니다.")
+        );
+        System.out.println("세대저장 위해 찾은 kakaoUsername : " + kakaoUser.getUsername());
+        kakaoUser.setGeneration(kakaoGenerationDto.getGeneration());
+        userRepository.save(kakaoUser);
     }
 }
