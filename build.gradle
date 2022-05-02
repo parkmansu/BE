@@ -40,6 +40,9 @@ dependencies {
 
     // 소설 로그인
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    //S3 연결 라이브러리
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.5.RELEASE'
 }
 
 tasks.named('test') {
