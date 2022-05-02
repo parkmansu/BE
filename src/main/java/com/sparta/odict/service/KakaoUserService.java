@@ -70,7 +70,6 @@ public class KakaoUserService {
         body.add("code", code);
 
         // HTTP 요청 보내기
-        //vvv
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
