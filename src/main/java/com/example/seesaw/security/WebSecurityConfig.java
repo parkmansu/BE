@@ -155,6 +155,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/image/**");
         skipPathList.add("GET,/");
 
+        // 채팅 관리 허용 (소켓통신을 위해)
+        skipPathList.add("GET,/mainchat/**");
+        skipPathList.add("GET,/ws-seesaw/**");
+        skipPathList.add("POST,/ws-seesaw/**");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(
                 skipPathList,
@@ -184,7 +188,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
-
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
