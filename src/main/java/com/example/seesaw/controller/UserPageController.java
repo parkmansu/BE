@@ -1,7 +1,7 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.GominResponseDto;
-import com.example.seesaw.service.GominService;
+//import com.example.seesaw.dto.GominResponseDto;
+//import com.example.seesaw.service.GominService;
 import com.example.seesaw.dto.ProfileRequestDto;
 import com.example.seesaw.dto.UserInfoResponseDto;
 import com.example.seesaw.security.UserDetailsImpl;
@@ -21,7 +21,7 @@ public class UserPageController {
 
     private final UserPageService userPageService;
     private final UserService userService;
-    private final GominService gominService;
+//    private final GominService gominService;
 
     //내정보 조회
     @GetMapping("/api/mypage")
@@ -31,12 +31,12 @@ public class UserPageController {
                 .body(userInfoResponseDto);
     }
     //내가 작성한 고민글 조회
-    @GetMapping("/api/mypage/gomins")
-    public ResponseEntity<GominResponseDto> findGomins(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        GominResponseDto gominResponseDto = gominService.findGomins(userDetails.getUser());
-        return ResponseEntity.ok()
-                .body(gominResponseDto);
-    }
+//    @GetMapping("/api/mypage/gomins")
+//    public ResponseEntity<GominResponseDto> findGomins(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        GominResponseDto gominResponseDto = gominService.findGomins(userDetails.getUser());
+//        return ResponseEntity.ok()
+//                .body(gominResponseDto);
+//    }
     //닉네임, 프로필 이미지 수정
     @PutMapping("/api/mypage/profile")
     public ResponseEntity<String> updateProfile(
