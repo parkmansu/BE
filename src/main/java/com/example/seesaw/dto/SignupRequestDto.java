@@ -20,7 +20,7 @@ public class SignupRequestDto {
     private String judgement;
     private String lifePattern;
     private String nickname;
-    private List<String> categories;
+    private List<Long> charId;
     private boolean admin = false;
     private String adminToken = "";
 }

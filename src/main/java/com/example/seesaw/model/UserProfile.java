@@ -18,13 +18,11 @@ public class UserProfile {
     private Long id; //1, 2,....
 
     @Column
+    private Long charId; //101, 102, 103, 201, 202, 203, 301, 302, 303....
+
+    @Column
     private String category; //헤어1, 헤어2, 헤어3, 눈썹1, 눈썹2, 눈썹3, 머리1, 머리2, 머리3
 
     @Column
     private String imageUrl; //s3 url, s3 url, s3 url, s3 url, s3 url, s3 url, s3 url, s3 url,
-
-//    @ManyToOne
-//    @JoinColumn(name = "USER_ID", nullable = false)
-//    private User user;
-
 }

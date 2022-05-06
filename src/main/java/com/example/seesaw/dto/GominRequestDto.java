@@ -11,8 +11,11 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoResponseDto {
-    private String username;
-    private String nickname;
-    private List<ProfileListDto> ProfileImages;
+public class GominRequestDto {
+    private String title;
+    private String contents;
+    private String question;
+    private String answer;
+    private List<String> tagName;
+    private List<String> imageUrls;
 }
