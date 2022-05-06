@@ -18,8 +18,6 @@ public class UserDetailsImpl implements UserDetails {
     public User getUser() {
         return user;
     }
-
-
     public String getNickname() {return user.getNickname();}
 
     @Override
