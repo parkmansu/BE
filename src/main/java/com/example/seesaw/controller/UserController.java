@@ -1,11 +1,8 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.RefreshTokenDto;
-import com.example.seesaw.dto.SignupRequestDto;
-import com.example.seesaw.dto.UserCheckRequestDto;
-import com.example.seesaw.model.UserProfile;
+import com.example.seesaw.dto.*;
 import com.example.seesaw.repository.UserProfileRepository;
-import com.example.seesaw.dto.MbtiRequestDto;
+import com.example.seesaw.service.UserPageService;
 import com.example.seesaw.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +18,7 @@ public class UserController {
 
     private final UserProfileRepository userProfileRepository;
     private final UserService userService;
+    private final UserPageService userPageService;
 
     //이메일, 비밀번호 유효성 확인
     @PostMapping("/user/check")
@@ -59,18 +55,22 @@ public class UserController {
 
     //캐릭터 커스터마이징 사진조회
     @GetMapping("/user/profiles")
-    public List<UserProfile> findProfiles() {
+    public ProfileResponseDto findProfiles() {
         //test data
-//        UserProfile basicProfile = new UserProfile(1L, "기본이미지", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/basicface.jpg");
+//        UserProfile basicProfile = new UserProfile(9L, 101L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_101.svg");
 //        userProfileRepository.save(basicProfile);
-//        UserProfile hairProfile1 = new UserProfile(2L, "머리1", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/hair.jpg");
+//        UserProfile hairProfile1 = new UserProfile(10L, 102L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_102.svg");
 //        userProfileRepository.save(hairProfile1);
-//        UserProfile hatProfile2 = new UserProfile(3L, "모자1", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/hat.jpg");
+//        UserProfile hatProfile2 = new UserProfile(3L, 201L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_201.svg");
 //        userProfileRepository.save(hatProfile2);
-//        UserProfile eyesProfile3 = new UserProfile(4L, "표정1", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/eyes.jpg");
+//        UserProfile eyesProfile3 = new UserProfile(4L, 202L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_202.svg");
 //        userProfileRepository.save(eyesProfile3);
+//        UserProfile eyesProfile4 = new UserProfile(5L, 301L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_301.svg");
+//        userProfileRepository.save(eyesProfile4);
+//        UserProfile eyesProfile5 = new UserProfile(6L, 302L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_302.svg");
+//        userProfileRepository.save(eyesProfile5);
 
-        return userProfileRepository.findAll();
+        return userPageService.findProfiles();
     }
 
 }

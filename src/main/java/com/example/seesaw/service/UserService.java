@@ -55,10 +55,10 @@ public class UserService {
         }
         //nickname 유효성 검사
         checkNickName(nickname);
-        //profile category 저장
-        List<String> categories = requestDto.getCategories();
-        if (categories == null){
-            throw new IllegalArgumentException("categories가 null 입니다.");
+        //profile 저장
+        List<Long> charIds = requestDto.getCharId();
+        if (charIds == null){
+            throw new IllegalArgumentException("charIds가 null 입니다.");
         }
 
         // 패스워드 암호화
@@ -66,8 +66,8 @@ public class UserService {
         User user = new User(username, enPassword, nickname, generation, postCount, mbti,role);
         userRepository.save(user); // DB 저장
 
-        for(String category : categories){
-            UserProfile userProfile = userProfileRepository.findByCategory(category);
+        for(Long charId : charIds){
+            UserProfile userProfile = userProfileRepository.findByCharId(charId);
             UserProfileNum userProfileNum = new UserProfileNum(userProfile, user);
             userProfileNumRepository.save(userProfileNum);
         }
@@ -156,13 +156,22 @@ public class UserService {
             throw new IllegalArgumentException("저장된 userProfileId 가 없습니다.");
         }
 
-        List<UserProfile> userProfiles = new ArrayList<>();
+        List<ProfileListDto> profileListDtos = new ArrayList<>();
         for(UserProfileNum num : userProfileNums){
             UserProfile userProfile = userProfileRepository.findById(num.getUserProfile().getId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 userProfile 이 없습니다."));
-            userProfiles.add(userProfile);
+            if (userProfile.getCategory().equals("faceUrl")){
+                ProfileListDto faceUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                profileListDtos.add(faceUrl);
+            } else if(userProfile.getCategory().equals("accessoryUrl")){
+                ProfileListDto accessoryUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                profileListDtos.add(accessoryUrl);
+            } else if(userProfile.getCategory().equals("backgroundUrl")){
+                ProfileListDto backgroundUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                profileListDtos.add(backgroundUrl);
+            }
         }
-        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), userProfiles);
+        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos);
     }
 
     public void checkUser(UserCheckRequestDto userCheckRequestDto) {

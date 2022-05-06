@@ -1,6 +1,6 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.GominResponseDto;
+import com.example.seesaw.dto.UserGominResponseDto;
 import com.example.seesaw.service.GominService;
 import com.example.seesaw.dto.ProfileRequestDto;
 import com.example.seesaw.dto.UserInfoResponseDto;
@@ -32,8 +32,8 @@ public class UserPageController {
     }
     //내가 작성한 고민글 조회
     @GetMapping("/api/mypage/gomins")
-    public ResponseEntity<GominResponseDto> findGomins(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        GominResponseDto gominResponseDto = gominService.findGomins(userDetails.getUser());
+    public ResponseEntity<UserGominResponseDto> findGomins(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserGominResponseDto gominResponseDto = gominService.findGomins(userDetails.getUser());
         return ResponseEntity.ok()
                 .body(gominResponseDto);
     }
