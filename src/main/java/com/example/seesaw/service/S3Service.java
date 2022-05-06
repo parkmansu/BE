@@ -8,8 +8,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.example.seesaw.model.Image;
-import com.example.seesaw.repository.ImageRepository;
+import com.example.seesaw.model.GominImage;
+import com.example.seesaw.repository.GominImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.apache.tomcat.jni.Mmap.delete;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +39,9 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    private final String bucket = "ceeso";
+    private final String bucket = "myseesaw";
 
-    private final ImageRepository imageRepository;
+    private final GominImageRepository gominImageRepository;
 
     @PostConstruct
     public void setS3Client() {
@@ -56,26 +54,63 @@ public class S3Service {
     }
 
     // 최초 게시글 작성
-    public List<String> upload(List<MultipartFile> files){
+    public List<String> upload(List<MultipartFile> files) {
 
         List<String> imageUrls = new ArrayList<>();
-
         for(MultipartFile file : files){
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
 
-            try(InputStream inputStream = file.getInputStream()) {
-                s3Client.putObject(new PutObjectRequest(bucket,fileName,inputStream,objectMetadata)
+            try (InputStream inputStream = file.getInputStream()) {
+                s3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 imageUrls.add(s3Client.getUrl(bucket, fileName).toString());
-            }catch (IOException e){
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드에 실패하셨습니다");
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하셨습니다");
             }
         }
+
         return imageUrls;
     }
+
+
+    // 글 수정(+ 기존 s3에 있는 이미지 정보 삭제)
+    public List<String> update(Long gominId, List<String> imageUrls, List<MultipartFile> files) {
+        //이미지 삭제 후 재업로드
+        delete(gominId, imageUrls);
+        return upload(files);
+    }
+
+    //기존 s3에 있는 기존 이미지 정보, DB 정보 삭제
+    public void delete(Long gominId, List<String> imageUrls) {
+        List<GominImage> savedImages = gominImageRepository.findAllByGominId(gominId);
+
+        List<String> lastImages = new ArrayList<>();
+        for (GominImage savedImage: savedImages){
+            lastImages.add(savedImage.getImageUrl());
+        }
+        if(imageUrls != null){
+            lastImages.removeAll(imageUrls);
+        }
+
+        for (String lastImage : lastImages) {
+            if (!lastImage.equals("")) {
+                String image = lastImage.replace("https://.s3.ap-northeast-2.amazonaws.com/", "");
+                boolean isExistObject = s3Client.doesObjectExist(bucket, image);
+                System.out.println("지워야할 url 주소 : " + image);
+                System.out.println("앞에 지운 url 주소 : " + image);
+                System.out.println("isExistObject : " + isExistObject);
+                if (isExistObject) {
+                    s3Client.deleteObject(bucket, image);
+                }
+            }
+            System.out.println(lastImage);
+            gominImageRepository.deleteByImageUrl(lastImage);
+        }
+    }
+
 
     private String createFileName(String fileName) {
         // 먼저 파일 업로드 시, 파일명을 난수화하기 위해 random으로 돌립니다.
@@ -85,38 +120,43 @@ public class S3Service {
     private String getFileExtension(String fileName) {
         // file 형식이 잘못된 경우를 확인하기 위해 만들어진 로직이며,
         // 파일 타입과 상관없이 업로드할 수 있게 하기 위해 .의 존재 유무만 판단
+        System.out.println("파일이름알고싶어요!! : " + fileName.substring(fileName.lastIndexOf(".")));
         try {
             return fileName.substring(fileName.lastIndexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
         }
     }
-    // 글 수정(+ 기존 s3에 있는 이미지 정보 삭제)
-    public List<String> update(Long postId, List<MultipartFile> files) {
-        //이미지 삭제 후 재업로드
-        delete(postId);
-        return upload(files);
-    }
-
-    //기존 s3에 있는 기존 이미지 정보 삭제
-    public void delete(Long itemId){
-        List<Image> lastImages = imageRepository.findByPostId(itemId);
-        System.out.println("삭제할 이전 경로들 : " +lastImages);
-
-        for(Image lastImage : lastImages){
-            if (!"".equals(lastImage.getImageUrl()) && lastImage.getImageUrl() != null) {
-                String lastImageUrl = lastImage.getImageUrl();
-                lastImageUrl = lastImageUrl.replace("https://ceeso.s3.ap-northeast-2.amazonaws.com/", "");
-                boolean isExistObject = s3Client.doesObjectExist(bucket, lastImageUrl);
-                System.out.println("지워야할 url 주소 : " +lastImage.getImageUrl());
-                System.out.println("앞에 지운 url 주소 : " + lastImageUrl);
-                System.out.println("isExistObject : " +isExistObject);
-                if (isExistObject) {
-                    s3Client.deleteObject(bucket, lastImageUrl);
-                }
-            }
-            imageRepository.deleteById(lastImage.getId());
-        }
-    }
-
+//
+//    public String uploadOne(MultipartFile file) {
+//        String fileName = createFileName(file.getOriginalFilename());
+//        String imgUrl = "";
+//        ObjectMetadata objectMetadata = new ObjectMetadata();
+//        objectMetadata.setContentLength(file.getSize());
+//        objectMetadata.setContentType(file.getContentType());
+//
+//        try (InputStream inputStream = file.getInputStream()) {
+//            s3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+//                    .withCannedAcl(CannedAccessControlList.PublicRead));
+//            imgUrl = s3Client.getUrl(bucket, fileName).toString();
+//        } catch (IOException e) {
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하셨습니다");
+//        }
+//
+//        return imgUrl;
+//    }
+//
+//
+//    //기존 이미지 삭제
+//    public void deleteOne(String lastImage) {
+//        if (!lastImage.equals("https://.s3.ap-northeast-2.amazonaws.com/당근이.png")) {
+//            lastImage = lastImage.replace("https://.s3.ap-northeast-2.amazonaws.com/", "");
+//            boolean isExistObject = s3Client.doesObjectExist(bucket, lastImage);
+//            System.out.println("지워야할 url 주소 : " + lastImage);
+//            System.out.println("isExistObject : " + isExistObject);
+//            if (isExistObject) {
+//                s3Client.deleteObject(bucket, lastImage);
+//            }
+//        }
+//    }
 }

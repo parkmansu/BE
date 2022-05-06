@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenDto {
-    private String refreshToken;
+public class ProfileListDto {
+    private Long charId;
+    private String Url;
 }

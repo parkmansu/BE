@@ -5,10 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenDto {
-    private String refreshToken;
+public class ProfileRequestDto {
+    private String nickname;
+    private List<Long> profileImages;
 }

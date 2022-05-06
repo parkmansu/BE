@@ -11,16 +11,9 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupRequestDto {
-    private String username;
-    private String pwd;
-    private String generation;
+public class MbtiRequestDto {
     private String energy;
     private String insight;
     private String judgement;
     private String lifePattern;
-    private String nickname;
-    private List<Long> charId;
-    private boolean admin = false;
-    private String adminToken = "";
 }

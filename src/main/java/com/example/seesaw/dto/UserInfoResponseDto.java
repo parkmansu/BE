@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
+import java.util.List;
+
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KakaoUserInfoDto {
-    private Long id;
-    private String email;
+public class UserInfoResponseDto {
+    private String username;
+    private String nickname;
+    private List<ProfileListDto> ProfileImages;
 }

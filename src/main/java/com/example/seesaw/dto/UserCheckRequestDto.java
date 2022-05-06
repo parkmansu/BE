@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class RefreshTokenDto {
-    private String refreshToken;
+@NoArgsConstructor
+public class UserCheckRequestDto {
+    private String username;
+    private String pwd;
+    private String pwdCheck;
 }

@@ -1,7 +1,7 @@
 package com.example.seesaw.security.filter;
 
-import com.example.seesaw.security.jwt.HeaderTokenExtractor;
 import com.example.seesaw.security.jwt.JwtPreProcessingToken;
+import com.example.seesaw.security.jwt.HeaderTokenExtractor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -78,4 +78,23 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
         );
     }
 
+    @Override
+    protected void unsuccessfulAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException failed
+    ) throws IOException, ServletException {
+        /*
+         *	로그인을 한 상태에서 Token값을 주고받는 상황에서 잘못된 Token값이라면
+         *	인증이 성공하지 못한 단계 이기 때문에 잘못된 Token값을 제거합니다.
+         *	모든 인증받은 Context 값이 삭제 됩니다.
+         */
+        SecurityContextHolder.clearContext();
+
+        super.unsuccessfulAuthentication(
+                request,
+                response,
+                failed
+        );
+    }
 }
