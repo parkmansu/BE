@@ -89,7 +89,7 @@ public class S3Service {
 
         List<String> lastImages = new ArrayList<>();
         for (GominImage savedImage: savedImages){
-            lastImages.add(savedImage.getImageUrl());
+            lastImages.add(savedImage.getGominImageUrl());
         }
         if(imageUrls != null){
             lastImages.removeAll(imageUrls);
@@ -107,7 +107,7 @@ public class S3Service {
                 }
             }
             System.out.println(lastImage);
-            gominImageRepository.deleteByImageUrl(lastImage);
+            gominImageRepository.deleteByGominImageUrl(lastImage);
         }
     }
 

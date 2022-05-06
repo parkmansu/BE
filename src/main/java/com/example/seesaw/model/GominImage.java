@@ -19,7 +19,7 @@ public class GominImage {
     private Long id;
 
     @Column(nullable = false)
-    private String imageUrl;
+    private String gominImageUrl;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
@@ -29,8 +29,8 @@ public class GominImage {
     @JoinColumn(name = "GOMIN_ID", nullable = false)
     private Gomin gomin;
 
-    public GominImage(String imageUrl, User user, Gomin gomin){
-        this.imageUrl = imageUrl;
+    public GominImage(String gominImageUrl, User user, Gomin gomin){
+        this.gominImageUrl = gominImageUrl;
         this.user = user;
         this.gomin = gomin;
 

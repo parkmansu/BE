@@ -2,8 +2,6 @@ package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.GominRequestDto;
 import com.example.seesaw.dto.GominResponseDto;
-import com.example.seesaw.dto.UserGominResponseDto;
-import com.example.seesaw.model.Gomin;
 import com.example.seesaw.repository.GominRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.GominService;

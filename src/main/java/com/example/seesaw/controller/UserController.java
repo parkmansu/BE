@@ -1,6 +1,7 @@
 package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.*;
+import com.example.seesaw.model.UserProfile;
 import com.example.seesaw.repository.UserProfileRepository;
 import com.example.seesaw.service.UserPageService;
 import com.example.seesaw.service.UserService;
@@ -57,17 +58,17 @@ public class UserController {
     @GetMapping("/user/profiles")
     public ProfileResponseDto findProfiles() {
         //test data
-//        UserProfile basicProfile = new UserProfile(9L, 101L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_101.svg");
+//        UserProfile basicProfile = new UserProfile(1L, 101L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_101_100.svg");
 //        userProfileRepository.save(basicProfile);
-//        UserProfile hairProfile1 = new UserProfile(10L, 102L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_102.svg");
+//        UserProfile hairProfile1 = new UserProfile(2L, 102L, "faceUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_face_102_100.svg");
 //        userProfileRepository.save(hairProfile1);
-//        UserProfile hatProfile2 = new UserProfile(3L, 201L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_201.svg");
+//        UserProfile hatProfile2 = new UserProfile(3L, 201L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_201_100.svg");
 //        userProfileRepository.save(hatProfile2);
-//        UserProfile eyesProfile3 = new UserProfile(4L, 202L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_202.svg");
+//        UserProfile eyesProfile3 = new UserProfile(4L, 202L, "accessoryUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_acc_202_100.svg");
 //        userProfileRepository.save(eyesProfile3);
-//        UserProfile eyesProfile4 = new UserProfile(5L, 301L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_301.svg");
+//        UserProfile eyesProfile4 = new UserProfile(5L, 301L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_301_100.svg");
 //        userProfileRepository.save(eyesProfile4);
-//        UserProfile eyesProfile5 = new UserProfile(6L, 302L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_302.svg");
+//        UserProfile eyesProfile5 = new UserProfile(6L, 302L, "backgroundUrl", "https://myseesaw.s3.ap-northeast-2.amazonaws.com/Char_bg_302_100.svg");
 //        userProfileRepository.save(eyesProfile5);
 
         return userPageService.findProfiles();

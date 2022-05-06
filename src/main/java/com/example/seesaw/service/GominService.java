@@ -93,7 +93,7 @@ public class GominService {
         }
         List<String> gominImageList = new ArrayList<>();
         for(GominImage gominImage : gominImages){
-            gominImageList.add(gominImage.getImageUrl());
+            gominImageList.add(gominImage.getGominImageUrl());
         }
 
         return new GominResponseDto(gomin.getTitle(), gomin.getContent(), gomin.getQuestion(), gomin.getAnswer(), gomiTagList, gominImageList);
@@ -121,8 +121,11 @@ public class GominService {
         if (name.equals("") && gominRequestDto.getImageUrls().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
             gominImageRepository.deleteAllByGominId(gominid);
-        } else {
+        } else if(!name.equals("")) {
             imagePaths.addAll(s3Service.update(gominid, gominRequestDto.getImageUrls(), files));
+        } else{
+            imagePaths = gominRequestDto.getImageUrls();
+            gominImageRepository.deleteAllByGominId(gominid);
         }
 
         for (String imagePath : imagePaths) {

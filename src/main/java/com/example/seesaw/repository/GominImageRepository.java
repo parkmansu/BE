@@ -9,7 +9,7 @@ import java.util.List;
 public interface GominImageRepository extends JpaRepository<GominImage, Long> {
     List<GominImage> findAllByGominId(Long gominid);
     @Transactional
-    void deleteByImageUrl(String lastImage);
+    void deleteByGominImageUrl(String lastImageUrl);
     @Transactional
     void deleteAllByGominId(Long gominid);
 }
