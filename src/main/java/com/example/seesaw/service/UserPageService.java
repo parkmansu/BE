@@ -3,8 +3,10 @@ package com.example.seesaw.service;
 import com.example.seesaw.dto.ProfileListDto;
 import com.example.seesaw.dto.ProfileRequestDto;
 import com.example.seesaw.dto.ProfileResponseDto;
+import com.example.seesaw.model.TroubleComment;
 import com.example.seesaw.model.UserProfile;
 import com.example.seesaw.model.UserProfileNum;
+import com.example.seesaw.repository.TroubleCommentRepository;
 import com.example.seesaw.repository.UserProfileNumRepository;
 import com.example.seesaw.repository.UserProfileRepository;
 import com.example.seesaw.model.User;
@@ -23,6 +25,7 @@ public class UserPageService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserProfileNumRepository userProfileNumRepository;
+    private final TroubleCommentRepository troubleCommentRepository;
 
 //    public void checkProfile(ProfileRequestDto profileRequestDto) {
 //        //닉네임 유효성 검사
@@ -41,8 +44,20 @@ public class UserPageService {
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
         //닉네임 유효성 검사 후 저장
         String nickname = userService.checkNickName(profileRequestDto.getNickname());
+        //고민댓글 nickname 변경
+        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByNickname(user.getNickname());
+        for(TroubleComment troubleComment:troubleComments){
+            troubleComment.setNickname(profileRequestDto.getNickname());
+            troubleCommentRepository.save(troubleComment);
+        }
+//        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
+//        for(PostComment postComment:postComments){
+//            postComment.setNickname(profileRequestDto.getNickname());
+//            postCommentRepository.save(postComment);
+//        }
         user.setNickname(nickname);
         userRepository.save(user);
+
         //IDs 유효성 검사 후 IDs 저장
         List<Long> profileImageCharIds = profileRequestDto.getProfileImages();
         List<UserProfileNum> userProfileNums = new ArrayList<>();
