@@ -1,6 +1,6 @@
 package com.example.seesaw.model;
 
-import com.example.seesaw.dto.GominRequestDto;
+import com.example.seesaw.dto.TroubleRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @AllArgsConstructor
-public class Gomin extends Timestamped {
+public class Trouble extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -34,17 +34,17 @@ public class Gomin extends Timestamped {
     @Column
     private Long viewCount;
 
-    @OneToMany(mappedBy = "gomin", cascade = CascadeType.REMOVE)
-    private List<GominImage> imageUrls;
+    @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
+    private List<TroubleImage> imageUrls;
 
-    @OneToMany(mappedBy = "gomin", cascade = CascadeType.REMOVE)
-    private List<GominTag> gominTags;
+    @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
+    private List<TroubleTag> troubleTags;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    public Gomin(String title, String content, String question, String answer, Long viewCount, User user){
+    public Trouble(String title, String content, String question, String answer, Long viewCount, User user){
         this.title = title;
         this.content = content;
         this.question = question;
@@ -53,10 +53,10 @@ public class Gomin extends Timestamped {
         this.user = user;
     }
 
-    public void update(GominRequestDto gominRequestDto) {
-        this.title = gominRequestDto.getTitle();
-        this.content = gominRequestDto.getContents();
-        this.question = gominRequestDto.getQuestion();
-        this.answer = gominRequestDto.getAnswer();
+    public void update(TroubleRequestDto troubleRequestDto) {
+        this.title = troubleRequestDto.getTitle();
+        this.content = troubleRequestDto.getContents();
+        this.question = troubleRequestDto.getQuestion();
+        this.answer = troubleRequestDto.getAnswer();
     }
 }

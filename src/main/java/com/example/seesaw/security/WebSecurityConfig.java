@@ -66,7 +66,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/h2-console/**")
-                .antMatchers("/oauth/**");
+                .antMatchers("/oauth/**")
+                .antMatchers(
+                        "/favicon.ico"
+                        ,"/error"
+                        ,"/swagger-ui/**"
+                        ,"/swagger-resources/**"
+                        ,"/v2/api-docs");
     }
 
     @Override
@@ -88,6 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http.headers().frameOptions().disable();
 
         /* 1.

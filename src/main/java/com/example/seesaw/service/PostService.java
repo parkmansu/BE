@@ -24,7 +24,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
     private final TagRepository tagRepository;
-    private final S3Service s3Service;
+    private final TroubleS3Service troubleS3Service;
 
     //단어장 작성
     @Transactional
@@ -40,7 +40,7 @@ public class PostService {
         if (name.equals("")) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
         } else {
-            imagePaths.addAll(s3Service.upload(files));
+            imagePaths.addAll(troubleS3Service.upload(files));
         }
         // 단어
         String title = requestDto.getTitle();
@@ -113,7 +113,7 @@ public class PostService {
         if (name.equals("")) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
         } else {
-            imagePaths.addAll(s3Service.update(postId, files));
+            imagePaths.addAll(troubleS3Service.update(postId, requestDto.getPostImages(), files));
         }
 
         //이미지 URL 저장
