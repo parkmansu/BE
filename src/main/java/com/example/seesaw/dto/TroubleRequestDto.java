@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GominRequestDto {
+public class TroubleRequestDto {
     private String title;
     private String contents;
     private String question;

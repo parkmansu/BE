@@ -13,26 +13,26 @@ import javax.persistence.*;
 @Setter
 @Entity
 @AllArgsConstructor
-public class GominImage {
+public class TroubleTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    private String gominImageUrl;
+    @Column
+    private String tagName;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "GOMIN_ID", nullable = false)
-    private Gomin gomin;
+    @JoinColumn(name = "TROUBLE_ID", nullable = false)
+    private Trouble trouble;
 
-    public GominImage(String gominImageUrl, User user, Gomin gomin){
-        this.gominImageUrl = gominImageUrl;
+    public TroubleTag(String tagName, User user, Trouble trouble){
+        this.tagName = tagName;
         this.user = user;
-        this.gomin = gomin;
+        this.trouble = trouble;
 
     }
 }

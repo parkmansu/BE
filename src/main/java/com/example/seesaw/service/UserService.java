@@ -53,8 +53,6 @@ public class UserService {
             }
             role = UserRoleEnum.ADMIN;
         }
-        //nickname 유효성 검사
-        checkNickName(nickname);
         //profile 저장
         List<Long> charIds = requestDto.getCharId();
         if (charIds == null){

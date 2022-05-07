@@ -8,8 +8,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.example.seesaw.model.GominImage;
-import com.example.seesaw.repository.GominImageRepository;
+import com.example.seesaw.model.TroubleImage;
+import com.example.seesaw.repository.TroubleImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class S3Service {
+public class TroubleS3Service {
 
     private AmazonS3 s3Client;
 
@@ -41,7 +41,7 @@ public class S3Service {
 
     private final String bucket = "myseesaw";
 
-    private final GominImageRepository gominImageRepository;
+    private final TroubleImageRepository troubleImageRepository;
 
     @PostConstruct
     public void setS3Client() {
@@ -77,19 +77,19 @@ public class S3Service {
 
 
     // 글 수정(+ 기존 s3에 있는 이미지 정보 삭제)
-    public List<String> update(Long gominId, List<String> imageUrls, List<MultipartFile> files) {
+    public List<String> update(Long troubleId, List<String> imageUrls, List<MultipartFile> files) {
         //이미지 삭제 후 재업로드
-        delete(gominId, imageUrls);
+        delete(troubleId, imageUrls);
         return upload(files);
     }
 
     //기존 s3에 있는 기존 이미지 정보, DB 정보 삭제
-    public void delete(Long gominId, List<String> imageUrls) {
-        List<GominImage> savedImages = gominImageRepository.findAllByGominId(gominId);
+    public void delete(Long troubleId, List<String> imageUrls) {
+        List<TroubleImage> savedImages = troubleImageRepository.findAllByTroubleId(troubleId);
 
         List<String> lastImages = new ArrayList<>();
-        for (GominImage savedImage: savedImages){
-            lastImages.add(savedImage.getGominImageUrl());
+        for (TroubleImage savedImage: savedImages){
+            lastImages.add(savedImage.getTroubleImageUrl());
         }
         if(imageUrls != null){
             lastImages.removeAll(imageUrls);
@@ -107,7 +107,7 @@ public class S3Service {
                 }
             }
             System.out.println(lastImage);
-            gominImageRepository.deleteByGominImageUrl(lastImage);
+            troubleImageRepository.deleteByTroubleImageUrl(lastImage);
         }
     }
 
@@ -127,36 +127,4 @@ public class S3Service {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
         }
     }
-//
-//    public String uploadOne(MultipartFile file) {
-//        String fileName = createFileName(file.getOriginalFilename());
-//        String imgUrl = "";
-//        ObjectMetadata objectMetadata = new ObjectMetadata();
-//        objectMetadata.setContentLength(file.getSize());
-//        objectMetadata.setContentType(file.getContentType());
-//
-//        try (InputStream inputStream = file.getInputStream()) {
-//            s3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-//                    .withCannedAcl(CannedAccessControlList.PublicRead));
-//            imgUrl = s3Client.getUrl(bucket, fileName).toString();
-//        } catch (IOException e) {
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하셨습니다");
-//        }
-//
-//        return imgUrl;
-//    }
-//
-//
-//    //기존 이미지 삭제
-//    public void deleteOne(String lastImage) {
-//        if (!lastImage.equals("https://.s3.ap-northeast-2.amazonaws.com/당근이.png")) {
-//            lastImage = lastImage.replace("https://.s3.ap-northeast-2.amazonaws.com/", "");
-//            boolean isExistObject = s3Client.doesObjectExist(bucket, lastImage);
-//            System.out.println("지워야할 url 주소 : " + lastImage);
-//            System.out.println("isExistObject : " + isExistObject);
-//            if (isExistObject) {
-//                s3Client.deleteObject(bucket, lastImage);
-//            }
-//        }
-//    }
 }
