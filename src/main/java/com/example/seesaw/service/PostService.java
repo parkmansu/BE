@@ -2,13 +2,13 @@ package com.example.seesaw.service;
 
 import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostResponseDto;
-import com.example.seesaw.model.Image;
+import com.example.seesaw.model.PostImage;
 import com.example.seesaw.model.Post;
-import com.example.seesaw.model.Tag;
+import com.example.seesaw.model.PostTag;
 import com.example.seesaw.model.User;
-import com.example.seesaw.repository.ImageRepository;
+import com.example.seesaw.repository.PostImageRepository;
 import com.example.seesaw.repository.PostRepository;
-import com.example.seesaw.repository.TagRepository;
+import com.example.seesaw.repository.PostTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,9 +22,10 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final ImageRepository imageRepository;
-    private final TagRepository tagRepository;
-    private final TroubleS3Service troubleS3Service;
+    private final PostImageRepository postImageRepository;
+    private final PostTagRepository postTagRepository;
+    private final PostS3Service postS3Service;
+
 
     //단어장 작성
     @Transactional
@@ -40,7 +41,8 @@ public class PostService {
         if (name.equals("")) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
         } else {
-            imagePaths.addAll(troubleS3Service.upload(files));
+            imagePaths.addAll(postS3Service.upload(files));
+
         }
         // 단어
         String title = requestDto.getTitle();
@@ -64,17 +66,17 @@ public class PostService {
         //이미지 URL 저장하기
         List<String> images = new ArrayList<>();
         for(String imageUrl : imagePaths){
-            Image image = new Image(imageUrl, post);
-            imageRepository.save(image);
-            images.add(image.getImageUrl());
+            PostImage postImage = new PostImage(imageUrl, post);
+            postImageRepository.save(postImage);
+            images.add(postImage.getImageUrl());
         }
 
         // tag 저장하기.
         List<String> tags = new ArrayList<>();
         for(String tagNames : tagName){
-            Tag tag = new Tag(tagNames, post);
-            tagRepository.save(tag);
-            tags.add(tag.getTagName());
+            PostTag postTag = new PostTag(tagNames, post);
+            postTagRepository.save(postTag);
+            tags.add(postTag.getTagName());
         }
 
         //return 값 생성
@@ -87,51 +89,54 @@ public class PostService {
     }
 
     // 단어장 수정
-    public PostResponseDto updatePost(Long postId, PostRequestDto requestDto, List<MultipartFile> files, User user) {
+    public void updatePost(Long postId, PostRequestDto requestDto,PostResponseDto responseDto, List<MultipartFile> files, User user) {
 
-        List<String> tagName = requestDto.getTagNames();
-        // 해당 단어장
+        // 해당 단어장 체크.
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("해당 단어장이 없습니다.")
         );
-
-        if (requestDto.getContents() == null) {
+        //단어 내용 수정시 null 불가.
+        if (responseDto.getTitle() != requestDto.getTitle()){
+            throw new IllegalArgumentException("단어는 변경할 수 없습니다.");
+        }
+        else if (requestDto.getContents() == null) {
             throw new IllegalArgumentException("등록할 단어의 내용을 적어주세요.");
         }
 
         //post update
         post.update(requestDto, user);
 
-        // 단어장 작성시 이미지파일 없이 등록시 기본 이미지 파일로 올리기!
-
+        // 이미지 name 확인
         String name = null;
         for(MultipartFile file:files){
             name = file.getOriginalFilename();
             System.out.println("file이름은~~~:" + name);
         }
+        // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("")) {
+        if (name.equals("") && requestDto.getImageUrl().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
-        } else {
-            imagePaths.addAll(troubleS3Service.update(postId, requestDto.getPostImages(), files));
+            postImageRepository.deleteAllByPostId(postId);
+        } else if(!name.equals("")) {
+            imagePaths.addAll(postS3Service.update(postId, requestDto.getImageUrl(), files));
+        } else{
+            imagePaths = requestDto.getImageUrl();
+            postImageRepository.deleteAllByPostId(postId);
         }
-
         //이미지 URL 저장
-        List<String> images = new ArrayList<>();
         for(String imageUrl : imagePaths){
-            Image image = new Image(imageUrl, post);
-            imageRepository.save(image);
-            images.add(image.getImageUrl());
+            PostImage postImage = new PostImage(imageUrl, post);
+            postImageRepository.save(postImage);
+
+        }
+        // tag 저장
+        List<String> tagName = requestDto.getTagNames();
+        postTagRepository.deleteAllByPostId(postId);
+        for(String tagNames : tagName){
+            PostTag postTag = new PostTag(tagNames, post);
+            postTagRepository.save(postTag);
         }
 
-        // tag 저장
-        List<String> tags = new ArrayList<>();
-        for(String tagNames : tagName){
-            Tag tag = new Tag(tagNames, post);
-            tagRepository.save(tag);
-            tags.add(tag.getTagName());
-        }
-        return new PostResponseDto(post, images, tags);
     }
 
 }

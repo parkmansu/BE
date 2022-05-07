@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+public class PostTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,7 +25,7 @@ public class Tag {
     @JoinColumn(name = "postid", nullable = false)
     private Post post;
 
-    public Tag(String tagName, Post post){
+    public PostTag(String tagName, Post post){
         this.tagName = tagName;
         this.post = post;
     }

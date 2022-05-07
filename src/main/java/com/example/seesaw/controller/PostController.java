@@ -26,31 +26,53 @@ public class PostController {
 
     //단어 등록
     @PostMapping(value = "/api/post", headers = ("content-type=multipart/*"))
-    public PostResponseDto createPost(
+    public ResponseEntity<String> createPost(
             @RequestPart("com") PostRequestDto requestDto,
             @RequestPart("files") ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return postService.createPost(requestDto, files, userDetails.getUser());
+        postService.createPost(requestDto, files, userDetails.getUser());
+        return ResponseEntity.ok()
+                .body("단어장 등록완료.");
     }
 
 
     // 단어 중복 확인
-    @GetMapping("/api/post/{title}/exists")
+    @GetMapping("/api/post/{title}/present")
     public ResponseEntity<Boolean> wordCheck(@PathVariable String title) {
         return ResponseEntity.ok(postService.wordCheck(title));
     }
 
     //단어 수정!
     @PutMapping("/api/post/{postId}/update")
-    public PostResponseDto updatePost(
+    public ResponseEntity<String> updatePost(
             @PathVariable Long postId,
-            @RequestPart(value="file",required = false)  PostRequestDto requestDto,
-            @RequestPart ArrayList<MultipartFile> files,
+            @RequestPart(value = "postRequestDto") PostRequestDto requestDto,
+            @RequestPart(value = "postResponseDto") PostResponseDto responseDto,
+            @RequestPart(value = "file", required = false) ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return postService.updatePost(postId, requestDto, files, userDetails.getUser());
+        postService.updatePost(postId, requestDto, responseDto, files, userDetails.getUser());
+        return ResponseEntity.ok()
+                .body("단어장 수정완료.");
     }
+
+    //단어장 삭제
+    @DeleteMapping("api/post/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        postRepository.deleteById(postId);
+        return ResponseEntity.ok()
+                .body("고민글 삭제완료");
+    }
+
+
+
+
+
+
+
+
+
 
 
     // 검색

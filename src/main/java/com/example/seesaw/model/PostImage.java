@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Image {
+public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +26,7 @@ public class Image {
     @JoinColumn(name = "postid", nullable = false)
     private Post post;
 
-    public Image(String imageUrls, Post post){
+    public PostImage(String imageUrls, Post post){
         this.imageUrl = imageUrls;
         this.post = post;
     }
