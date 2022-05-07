@@ -114,13 +114,13 @@ public class PostService {
         }
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("") && requestDto.getPostImages().get(0).isEmpty()) {
+        if (name.equals("") && requestDto.getImageUrl().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
             postImageRepository.deleteAllByPostId(postId);
         } else if(!name.equals("")) {
-            imagePaths.addAll(postS3Service.update(postId, requestDto.getPostImages(), files));
+            imagePaths.addAll(postS3Service.update(postId, requestDto.getImageUrl(), files));
         } else{
-            imagePaths = requestDto.getPostImages();
+            imagePaths = requestDto.getImageUrl();
             postImageRepository.deleteAllByPostId(postId);
         }
         //이미지 URL 저장
