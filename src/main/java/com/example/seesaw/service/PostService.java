@@ -26,6 +26,7 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     private final PostS3Service postS3Service;
 
+
     //단어장 작성
     @Transactional
     public PostResponseDto createPost(PostRequestDto requestDto, List<MultipartFile> files, User user) {
@@ -41,6 +42,7 @@ public class PostService {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
         } else {
             imagePaths.addAll(postS3Service.upload(files));
+
         }
         // 단어
         String title = requestDto.getTitle();

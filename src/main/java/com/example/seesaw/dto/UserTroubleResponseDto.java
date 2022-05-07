@@ -1,5 +1,6 @@
 package com.example.seesaw.dto;
 
+import com.example.seesaw.model.Trouble;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GominResponseDto {
-    private String title;
-    private String contents;
-    private String question;
-    private String answer;
-    private List<String> tagName;
-    private List<String> imageUrls;
+public class UserTroubleResponseDto {
+    private Long troubleCount;
+    private List<Trouble> troubleList;
 }
