@@ -30,11 +30,11 @@ public class Post extends Timestamped {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column
-    private List<Image> imageList;
+    private List<PostImage> postImageList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column
-    private List<Tag> tags;
+    private List<PostTag> postTags;
 
     @ManyToOne
     @JoinColumn(name = "userid")
@@ -51,10 +51,6 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.videoUrl = requestDto.getVideoUrl();
         this.user = user;
-    }
-
-    public void add(Image imageUrl) {
-        imageList.add(imageUrl);
     }
 
 }

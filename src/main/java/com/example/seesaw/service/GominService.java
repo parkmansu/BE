@@ -24,7 +24,7 @@ public class GominService {
     private final GominTagRepository gominTagRepository;
     private final GominRepository gominRepository;
     private final GominImageRepository gominImageRepository;
-    private final S3Service s3Service;
+    private final PostS3Service postS3Service;
 
 
 //    @Override
@@ -45,7 +45,7 @@ public class GominService {
         if (name.equals("")) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
         } else {
-            imagePaths.addAll(s3Service.upload(files));
+            imagePaths.addAll(postS3Service.upload(files));
         }
         Gomin gomin = new Gomin(
                 gominRequestDto.getTitle(),
@@ -122,7 +122,7 @@ public class GominService {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
             gominImageRepository.deleteAllByGominId(gominid);
         } else {
-            imagePaths.addAll(s3Service.update(gominid, gominRequestDto.getImageUrls(), files));
+            imagePaths.addAll(postS3Service.update(gominid, gominRequestDto.getImageUrls(), files));
         }
 
         for (String imagePath : imagePaths) {
