@@ -148,6 +148,24 @@ public class UserService {
 
     @Transactional
     public UserInfoResponseDto findUserInfo(User user) {
+        List<ProfileListDto> profileListDtos = findUserProfiles(user);
+
+        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos);
+    }
+
+    public void checkUser(UserCheckRequestDto userCheckRequestDto) {
+        String username = userCheckRequestDto.getUsername();
+        String pwd = userCheckRequestDto.getPwd();
+        String pwdCheck = userCheckRequestDto.getPwdCheck();
+
+        //아이디 유효성 검사
+        checkUserName(username);
+
+        //비밀번호 유효성 검사
+        checkUserPw(pwd, pwdCheck);
+    }
+
+    public List<ProfileListDto> findUserProfiles(User user){
 
         List<UserProfileNum> userProfileNums = userProfileNumRepository.findAllByUserId(user.getId());
         if(userProfileNums.isEmpty()){
@@ -169,19 +187,7 @@ public class UserService {
                 profileListDtos.add(backgroundUrl);
             }
         }
-        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos);
-    }
-
-    public void checkUser(UserCheckRequestDto userCheckRequestDto) {
-        String username = userCheckRequestDto.getUsername();
-        String pwd = userCheckRequestDto.getPwd();
-        String pwdCheck = userCheckRequestDto.getPwdCheck();
-
-        //아이디 유효성 검사
-        checkUserName(username);
-
-        //비밀번호 유효성 검사
-        checkUserPw(pwd, pwdCheck);
+        return profileListDtos;
     }
 }
 

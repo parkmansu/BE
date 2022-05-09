@@ -29,7 +29,7 @@ public class PostService {
 
     //단어장 작성
     @Transactional
-    public PostResponseDto createPost(PostRequestDto requestDto, List<MultipartFile> files, User user) {
+    public void createPost(PostRequestDto requestDto, List<MultipartFile> files, User user) {
 
         // 단어장 작성시 이미지파일 없이 등록시 기본 이미지 파일로 올리기!
         String name = null;
@@ -78,9 +78,6 @@ public class PostService {
             postTagRepository.save(postTag);
             tags.add(postTag.getTagName());
         }
-
-        //return 값 생성
-        return new PostResponseDto(post, images, tags);
     }
 
     // 중복체크
@@ -114,13 +111,13 @@ public class PostService {
         }
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("") && requestDto.getImageUrl().get(0).isEmpty()) {
+        if (name.equals("") && requestDto.getPostImages().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
             postImageRepository.deleteAllByPostId(postId);
         } else if(!name.equals("")) {
-            imagePaths.addAll(postS3Service.update(postId, requestDto.getImageUrl(), files));
+            imagePaths.addAll(postS3Service.update(postId, requestDto.getPostImages(), files));
         } else{
-            imagePaths = requestDto.getImageUrl();
+            imagePaths = requestDto.getPostImages();
             postImageRepository.deleteAllByPostId(postId);
         }
         //이미지 URL 저장

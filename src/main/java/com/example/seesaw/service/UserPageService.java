@@ -1,5 +1,16 @@
 package com.example.seesaw.service;
 
+import com.example.seesaw.dto.ProfileListDto;
+import com.example.seesaw.dto.ProfileRequestDto;
+import com.example.seesaw.dto.ProfileResponseDto;
+import com.example.seesaw.model.TroubleComment;
+import com.example.seesaw.model.UserProfile;
+import com.example.seesaw.model.UserProfileNum;
+import com.example.seesaw.repository.TroubleCommentRepository;
+import com.example.seesaw.repository.UserProfileNumRepository;
+import com.example.seesaw.repository.UserProfileRepository;
+import com.example.seesaw.model.User;
+import com.example.seesaw.repository.UserRepository;
 import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
@@ -17,30 +28,32 @@ public class UserPageService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserProfileNumRepository userProfileNumRepository;
+    private final TroubleCommentRepository troubleCommentRepository;
+
     private final ScrapRepository scrapRepository;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final TroubleRepository troubleRepository;
 
-    //    public void checkProfile(ProfileRequestDto profileRequestDto) {
-//        //닉네임 유효성 검사
-//        checkNickName(profileRequestDto.getNickname());
-//        //IDs 유효성 검사
-//        List<Long> profileImageNums = profileRequestDto.getProfileImages();
-//        for(Long num : profileImageNums){
-//            userProfileRepository.findById(num).orElseThrow(
-//                    () -> new IllegalArgumentException("해당하는 이미지가 없습니다.")
-//            );
-//            //UserProfileNum userProfileNum = new UserProfileNum(userProfile, user);
-//            //userProfileNumRepository.save(userProfileNum);
-//        }
-//    }
+
     // 프로필 수정
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
         //닉네임 유효성 검사 후 저장
         String nickname = userService.checkNickName(profileRequestDto.getNickname());
+        //고민댓글 nickname 변경
+        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByNickname(user.getNickname());
+        for (TroubleComment troubleComment : troubleComments) {
+            troubleComment.setNickname(profileRequestDto.getNickname());
+            troubleCommentRepository.save(troubleComment);
+        }
+//        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
+//        for(PostComment postComment:postComments){
+//            postComment.setNickname(profileRequestDto.getNickname());
+//            postCommentRepository.save(postComment);
+//        }
         user.setNickname(nickname);
         userRepository.save(user);
+
         //IDs 유효성 검사 후 IDs 저장
         List<Long> profileImageCharIds = profileRequestDto.getProfileImages();
         List<UserProfileNum> userProfileNums = new ArrayList<>();
@@ -80,7 +93,7 @@ public class UserPageService {
         for (PostScrap postScrap : postScraps) {
             for (Post post : posts) {
                 // postScrap테이블 postId 와 post테이불 postId가 일치할때
-                if (post.getId().equals(postScrap.getPost().getId())){
+                if (post.getId().equals(postScrap.getPost().getId())) {
                     // postId에 해당하는 postImage 가져오기
                     List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
                     // 첫번째 이미지만 가져오기
@@ -95,14 +108,13 @@ public class UserPageService {
     }
 
     // 내가 등록한 고민글 조회 (마이페이지)
-    public List<MyTroublesResponseDto> getMyTroubles(User user){
+    public List<MyTroublesResponseDto> getMyTroubles(User user) {
         List<Trouble> troubles = troubleRepository.findAllByUserId(user.getId());
 
         List<MyTroublesResponseDto> myTroublesResponseDtos = new ArrayList<>();
-        for (Trouble trouble: troubles){
+        for (Trouble trouble : troubles) {
             myTroublesResponseDtos.add(new MyTroublesResponseDto(trouble));
         }
-
         return myTroublesResponseDtos;
     }
 }
