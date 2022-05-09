@@ -1,15 +1,8 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.TroubleRequestDto;
-import com.example.seesaw.dto.TroubleResponseDto;
-import com.example.seesaw.dto.UserTroubleResponseDto;
-import com.example.seesaw.model.Trouble;
-import com.example.seesaw.model.TroubleImage;
-import com.example.seesaw.model.TroubleTag;
-import com.example.seesaw.model.User;
-import com.example.seesaw.repository.TroubleImageRepository;
-import com.example.seesaw.repository.TroubleRepository;
-import com.example.seesaw.repository.TroubleTagRepository;
+import com.example.seesaw.dto.*;
+import com.example.seesaw.model.*;
+import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,12 +18,10 @@ public class TroubleService {
     private final TroubleRepository troubleRepository;
     private final TroubleImageRepository troubleImageRepository;
     private final TroubleS3Service troubleS3Service;
-
-
-//    @OverrIde
-//    public String toString(){
-//        return name;
-//    }
+    private final TroubleCommentRepository troubleCommentRepository;
+    private final ConvertTimeService convertTimeService;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     //Trouble 글 등록
     public void registerTrouble(TroubleRequestDto troubleRequestDto, List<MultipartFile> files, User user) {
@@ -159,6 +150,36 @@ public class TroubleService {
         } else if (troubleRequestDto.getAnswer().isEmpty()) {
             throw new IllegalArgumentException("답변자세대 입력은 필수값입니다.");
         }
+    }
+
+    public TroubleDetailResponseDto findDetailTrouble(Long troubleId) {
+        Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
+                () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
+        );
+        TroubleResponseDto troubleResponseDto = findTrouble(troubleId);
+
+        TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleResponseDto);
+        troubleDetailResponseDto.setNickname(trouble.getUser().getNickname());
+        troubleDetailResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+        String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
+        troubleDetailResponseDto.setPostTime(postTime);
+        troubleDetailResponseDto.setViews(trouble.getViews());
+        trouble.setViews(trouble.getViews()+1);
+        troubleRepository.save(trouble);
+
+        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId);
+        troubleDetailResponseDto.setCommentCount((long) troubleComments.size());
+        List<TroubleCommentRequestDto> troubleCommentRequestDtos = new ArrayList<>();
+        for(TroubleComment troubleComment:troubleComments){
+            TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
+            User user = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
+                    () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
+            troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
+            troubleCommentRequestDtos.add(troubleCommentRequestDto);
+        }
+        troubleDetailResponseDto.setTroubleComments(troubleCommentRequestDtos);
+
+        return troubleDetailResponseDto;
     }
 
 }

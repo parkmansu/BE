@@ -32,7 +32,7 @@ public class Trouble extends Timestamped {
     private String answer;
 
     @Column
-    private Long viewCount;
+    private Long views;
 
     @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
     private List<TroubleImage> imageUrls;
@@ -44,12 +44,12 @@ public class Trouble extends Timestamped {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    public Trouble(String title, String content, String question, String answer, Long viewCount, User user){
+    public Trouble(String title, String content, String question, String answer, Long views, User user){
         this.title = title;
         this.content = content;
         this.question = question;
         this.answer = answer;
-        this.viewCount = viewCount;
+        this.views = views;
         this.user = user;
     }
 

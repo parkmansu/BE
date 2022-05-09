@@ -25,6 +25,7 @@ public class TroubleCommentService {
         troubleCommentRequestDto.setNickname(commentUser.getNickname());
         Trouble savedTrouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalStateException("해당 게시글이 없습니다."));
+        troubleCommentRequestDto.setLikeCount(0L);
         TroubleComment troubleComment = new TroubleComment(savedTrouble, troubleCommentRequestDto);
         troublecommentRepository.save(troubleComment);
     }

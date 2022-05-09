@@ -27,20 +27,6 @@ public class UserPageService {
     private final UserProfileNumRepository userProfileNumRepository;
     private final TroubleCommentRepository troubleCommentRepository;
 
-//    public void checkProfile(ProfileRequestDto profileRequestDto) {
-//        //닉네임 유효성 검사
-//        checkNickName(profileRequestDto.getNickname());
-//        //IDs 유효성 검사
-//        List<Long> profileImageNums = profileRequestDto.getProfileImages();
-//        for(Long num : profileImageNums){
-//            userProfileRepository.findById(num).orElseThrow(
-//                    () -> new IllegalArgumentException("해당하는 이미지가 없습니다.")
-//            );
-//            //UserProfileNum userProfileNum = new UserProfileNum(userProfile, user);
-//            //userProfileNumRepository.save(userProfileNum);
-//        }
-//    }
-
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
         //닉네임 유효성 검사 후 저장
         String nickname = userService.checkNickName(profileRequestDto.getNickname());
@@ -86,9 +72,4 @@ public class UserPageService {
         }
         return new ProfileResponseDto(faceUrl, accessoryUrl, backgroudUrl);
     }
-
-//    public GominResponseDto findGomins(User user) {
-//        List<Gomin> gomins = gominRepository.findAllByUserId(user.getId());
-//        return new GominResponseDto((long) gomins.size(), gomins);
-//    }
 }

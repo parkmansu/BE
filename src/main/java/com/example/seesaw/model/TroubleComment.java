@@ -27,9 +27,15 @@ public class TroubleComment extends Timestamped{
     @Column(nullable = false)
     private String nickname;
 
+    @Column
+    private Long likeCount;
+
     public TroubleComment(Trouble trouble, TroubleCommentRequestDto troubleCommentRequestDto) {
         this.trouble = trouble;
         this.comment = troubleCommentRequestDto.getComment();
         this.nickname = troubleCommentRequestDto.getNickname();
+        this.likeCount = troubleCommentRequestDto.getLikeCount();
     }
+
+
 }

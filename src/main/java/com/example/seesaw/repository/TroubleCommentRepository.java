@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TroubleCommentRepository extends JpaRepository<TroubleComment, Long> {
     List<TroubleComment> findAllByNickname(String nickname);
+
+    List<TroubleComment> findAllByTroubleIdOrderByLikeCountDesc(Long troubleId);
 }
