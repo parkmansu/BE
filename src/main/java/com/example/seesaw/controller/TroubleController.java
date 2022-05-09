@@ -1,5 +1,6 @@
 package com.example.seesaw.controller;
 
+import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleRequestDto;
 import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.repository.TroubleRepository;
@@ -57,5 +58,13 @@ public class TroubleController {
         troubleRepository.deleteById(troubleId);
         return ResponseEntity.ok()
                 .body("고민글 삭제완료");
+    }
+
+    //고민글 상세조회
+    @GetMapping("api/trouble/{troubleId}/detail")
+    public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(@PathVariable Long troubleId){
+        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId);
+        return ResponseEntity.ok()
+                .body(troubleDetailResponseDto);
     }
 }
