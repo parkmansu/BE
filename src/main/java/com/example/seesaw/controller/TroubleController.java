@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class TroubleController {
+
     private final TroubleService troubleService;
     private final TroubleRepository troubleRepository;
 

@@ -50,6 +50,8 @@ public class PostService {
         String contents = requestDto.getContents();
         // videoUrl
         String videoUrl = requestDto.getVideoUrl();
+        // generation
+        String generation = requestDto.getGeneration();
         // 태그
         List<String> tagName = requestDto.getTagNames();
 
@@ -60,7 +62,7 @@ public class PostService {
         }
 
         //post 저장
-        Post post = new Post(title, contents, videoUrl, user);
+        Post post = new Post(title, contents, videoUrl, generation, user);
         postRepository.save(post);
 
         //이미지 URL 저장하기
@@ -68,7 +70,7 @@ public class PostService {
         for(String imageUrl : imagePaths){
             PostImage postImage = new PostImage(imageUrl, post);
             postImageRepository.save(postImage);
-            images.add(postImage.getImageUrl());
+            images.add(postImage.getPostImages());
         }
 
         // tag 저장하기.
@@ -78,6 +80,9 @@ public class PostService {
             postTagRepository.save(postTag);
             tags.add(postTag.getTagName());
         }
+
+        //return 값 생성
+        new PostResponseDto(post, images, tags);
     }
 
     // 중복체크

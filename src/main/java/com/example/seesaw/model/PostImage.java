@@ -19,15 +19,15 @@ public class PostImage {
     private Long id;
 
     @Column(columnDefinition = "TEXT")
-    private String imageUrl;
+    private String postImages;
 
 
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "postid", nullable = false)
     private Post post;
 
-    public PostImage(String imageUrls, Post post){
-        this.imageUrl = imageUrls;
+    public PostImage(String postImages, Post post){
+        this.postImages = postImages;
         this.post = post;
     }
 
