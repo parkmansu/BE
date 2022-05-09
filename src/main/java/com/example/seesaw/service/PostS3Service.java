@@ -89,7 +89,7 @@ public class PostS3Service {
 
         List<String> lastImages = new ArrayList<>();
         for (PostImage savedImage: savedImages){
-            lastImages.add(savedImage.getImageUrl());
+            lastImages.add(savedImage.getPostImages());
         }
         if(imageUrls != null){
             lastImages.removeAll(imageUrls);
@@ -107,7 +107,7 @@ public class PostS3Service {
                 }
             }
             System.out.println(lastImage);
-            postImageRepository.deleteByImageUrl(lastImage);
+            postImageRepository.deleteByPostImages(lastImage);
         }
     }
 

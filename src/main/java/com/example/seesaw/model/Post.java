@@ -28,9 +28,12 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String videoUrl;
 
+    @Column(nullable = false)
+    private String generation;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column
-    private List<PostImage> postImageList;
+    private List<PostImage> postImages;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column
@@ -40,11 +43,13 @@ public class Post extends Timestamped {
     @JoinColumn(name = "userid")
     private User user;
 
-    public Post(String title, String contents, String videoUrl, User user) {
+    public Post(String title, String contents, String videoUrl, String generation, User user) {
         this.title = title;
         this.contents = contents;
         this.videoUrl = videoUrl;
+        this.generation = generation;
         this.user = user;
+
     }
 
     public void update(PostRequestDto requestDto, User user) {

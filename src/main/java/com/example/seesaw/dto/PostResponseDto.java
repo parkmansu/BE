@@ -12,15 +12,17 @@ import java.util.List;
 public class PostResponseDto {
     private String title;
     private String contents;
-    private List<String> imageList;
+    private List<String> postImages;
     private List<String> tagNames;
     private String videoUrl;
+    private String generation;
 
-    public PostResponseDto(Post post, List<String> imageList, List<String> tagNames) {
+    public PostResponseDto(Post post, List<String> postImages, List<String> tagNames) {
         this.title = post.getTitle();
         this.contents = post.getContents();
-        this.imageList = imageList;
+        this.postImages = postImages;
         this.videoUrl = post.getVideoUrl();
         this.tagNames = tagNames;
+        this.generation = post.getGeneration();
     }
 }

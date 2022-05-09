@@ -1,6 +1,5 @@
 package com.example.seesaw.repository;
 
-import com.example.seesaw.model.GominImage;
 import com.example.seesaw.model.PostImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,7 +12,7 @@ public interface PostImageRepository extends JpaRepository<PostImage, Long> {
     void deleteAllByPostId(Long postId);
 
     @Transactional
-    void deleteByImageUrl(String lastImage);
+    void deleteByPostImages(String postImages);
 
     List<PostImage> findAllByPostId(Long postId);
 }
