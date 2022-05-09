@@ -24,6 +24,6 @@ public class MyScrapResponseDto {
 //        this.views = post.getViews();   // 아직 테이블에 없음
         this.scrapCount = scrapCount;
 //        this.commentCount = post.getCommentCount(); // 아직 테이블
-        this.mainImage = postImage.getImageUrl();
+        this.mainImage = postImage.getPostImages();
     }
 }

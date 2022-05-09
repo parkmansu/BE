@@ -111,11 +111,13 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
         if (name.equals("") && troubleRequestDto.getImageUrls().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(!name.equals("")) {
             imagePaths.addAll(troubleS3Service.update(troubleId, troubleRequestDto.getImageUrls(), files));
         } else{
             imagePaths = troubleRequestDto.getImageUrls();
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         }
 
