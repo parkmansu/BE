@@ -135,12 +135,6 @@ public class TroubleService {
         }
     }
 
-    //USER가 작성한 고민리스트 찾기
-    public UserTroubleResponseDto findTroubles(User user) {
-        List<Trouble> troubles = troubleRepository.findAllByUserId(user.getId());
-        return new UserTroubleResponseDto((long) troubles.size(), troubles);
-    }
-
     //고민글 유효성 검사
     public void checkTrouble(TroubleRequestDto troubleRequestDto) {
         if (troubleRequestDto.getTitle().isEmpty()) {
@@ -186,6 +180,15 @@ public class TroubleService {
 
     public List<TroubleAllResponseDto> findAllTroubles() {
         List<Trouble> troubles = troubleRepository.findAllByOrderByCreatedAtDesc();
+        return getTroubles(troubles);
+    }
+
+    public List<TroubleAllResponseDto> findViewTroubles() {
+        List<Trouble> troubles = troubleRepository.findAllByOrderByViewsDesc();
+        return getTroubles(troubles);
+    }
+
+    public List<TroubleAllResponseDto> getTroubles(List<Trouble> troubles){
         if(troubles.isEmpty()){
             throw new IllegalArgumentException("작성된 고민글이 없습니다.");
         }
