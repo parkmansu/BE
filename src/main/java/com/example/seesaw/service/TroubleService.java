@@ -111,11 +111,13 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
         if (name.equals("") && troubleRequestDto.getImageUrls().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(!name.equals("")) {
             imagePaths.addAll(troubleS3Service.update(troubleId, troubleRequestDto.getImageUrls(), files));
         } else{
             imagePaths = troubleRequestDto.getImageUrls();
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         }
 
@@ -182,4 +184,26 @@ public class TroubleService {
         return troubleDetailResponseDto;
     }
 
+    public List<TroubleAllResponseDto> findAllTroubles() {
+        List<Trouble> troubles = troubleRepository.findAllByOrderByCreatedAtDesc();
+        if(troubles.isEmpty()){
+            throw new IllegalArgumentException("작성된 고민글이 없습니다.");
+        }
+        List<TroubleAllResponseDto> troubleAllResponseDtos = new ArrayList<>();
+        long id = 0L;
+        for(Trouble trouble:troubles){
+            TroubleResponseDto troubleResponseDto = findTrouble(trouble.getId());
+            TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleResponseDto);
+            troubleAllResponseDto.setId(++id);
+            troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
+            troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+            String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
+            troubleAllResponseDto.setPostTime(postTime);
+            troubleAllResponseDto.setViews(trouble.getViews());
+            List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(trouble.getId());
+            troubleAllResponseDto.setCommentCount((long) troubleComments.size());
+            troubleAllResponseDtos.add(troubleAllResponseDto);
+        }
+        return troubleAllResponseDtos;
+    }
 }

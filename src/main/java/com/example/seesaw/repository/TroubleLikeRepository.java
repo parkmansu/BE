@@ -12,6 +12,4 @@ public interface TroubleLikeRepository extends JpaRepository<TroubleLike, Long> 
     TroubleLike findByTroubleCommentAndUserId(TroubleComment troubleComment, Long userId);
     @Transactional
     void deleteById(Long id);
-
-    List<TroubleLike> findAllByTroubleCommentId(Long commentId);
 }
