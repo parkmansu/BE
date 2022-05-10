@@ -9,4 +9,6 @@ public interface TroubleCommentRepository extends JpaRepository<TroubleComment, 
     List<TroubleComment> findAllByNickname(String nickname);
 
     List<TroubleComment> findAllByTroubleIdOrderByLikeCountDesc(Long troubleId);
+
+    List<TroubleComment> findAllByTroubleId(Long id);
 }

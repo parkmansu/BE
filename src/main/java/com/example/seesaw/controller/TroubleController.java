@@ -1,5 +1,6 @@
 package com.example.seesaw.controller;
 
+import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleRequestDto;
 import com.example.seesaw.dto.TroubleResponseDto;
@@ -66,5 +67,13 @@ public class TroubleController {
         TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId);
         return ResponseEntity.ok()
                 .body(troubleDetailResponseDto);
+    }
+
+    //고민글 조회
+    @GetMapping("api/trouble/list")
+    public ResponseEntity<List<TroubleAllResponseDto>> findDetailTrouble(){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+        return ResponseEntity.ok()
+                .body(troubleAllResponseDto);
     }
 }
