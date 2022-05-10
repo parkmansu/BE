@@ -18,12 +18,12 @@ public class MyScrapResponseDto {
     private int commentCount; // 댓글 개수
     private String mainImage; // 메인 이미지
 
-    public MyScrapResponseDto(PostScrap postScrap, Post post, int scrapCount, PostImage postImage){
+    public MyScrapResponseDto(PostScrap postScrap, Post post, int scrapCount, int commentCount, PostImage postImage){
         this.scrapId = postScrap.getId();
         this.title = post.getTitle();
 //        this.views = post.getViews();   // 아직 테이블에 없음
         this.scrapCount = scrapCount;
-//        this.commentCount = post.getCommentCount(); // 아직 테이블
-        this.mainImage = postImage.getImageUrl();
+        this.commentCount = commentCount; 
+        this.mainImage = postImage.getPostImages();
     }
 }
