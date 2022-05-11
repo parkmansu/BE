@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -146,10 +146,14 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
+        // paging 처리
         Pageable pageable = PageRequest.of(page-1, 4);
-        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId, pageable);
-        List<PostComment> postCommentList = postCommentRepository.findAllByPostId(postId);
-        postDetailResponseDto.setCommentCount((long) postCommentList.size());
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
+
+        // 댓글 개수
+        List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
+        postDetailResponseDto.setCommentCount((long) postComments.size());
+
 
         List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
         for(PostComment postComment:postCommentPage){
@@ -163,6 +167,14 @@ public class PostService {
 
         return postDetailResponseDto;
     }
+
+    // 현재 사용자 정보(토큰에 있는 정보를 활용?!) //https://00hongjun.github.io/spring-security/securitycontextholder/ 참고.
+    private User getCurrentUser() {
+        String nickname = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(nickname)
+                .orElseThrow(() -> new RuntimeException("Error : User is not found"));
+    }
+
 
     public PostResponseDto postTagAndImages(Long postId) {
 
@@ -190,7 +202,6 @@ public class PostService {
 
         return new PostResponseDto(post, postImageList, postTagList);
     }
-
     @Transactional
     public PostSearchDto searchPosts(String title, String contents) {
         List<Post> posts = postRepository.findByTitleContainingOrContentsContaining(title,contents);

@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostSearchController {
 
-
     private final PostService postService;
 
     // 검색

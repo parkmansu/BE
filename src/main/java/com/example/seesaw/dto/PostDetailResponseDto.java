@@ -1,5 +1,6 @@
 package com.example.seesaw.dto;
 
+import com.example.seesaw.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PostDetailResponseDto {
 
-    private String nickname;
+    private String LastNickname;
     private List<ProfileListDto> profileImages;
     private String title;
     private String contents;
@@ -26,6 +27,9 @@ public class PostDetailResponseDto {
     private Long commentCount;
     private String postTime;
     private List<PostCommentRequestDto> postComments;
+    private int scrapCount;
+    private String nickname;
+
 
     public PostDetailResponseDto(PostResponseDto responseDto) {
         this.tagName = responseDto.getTagNames();
