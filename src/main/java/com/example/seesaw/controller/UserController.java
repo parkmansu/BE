@@ -1,7 +1,6 @@
 package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.*;
-import com.example.seesaw.model.UserProfile;
 import com.example.seesaw.repository.UserProfileRepository;
 import com.example.seesaw.service.UserPageService;
 import com.example.seesaw.service.UserService;

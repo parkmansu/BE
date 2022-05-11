@@ -26,6 +26,11 @@ public class PostScrapService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Error : post is not found"));
         PostScrap postScrap = new PostScrap(user, post);
+
+        // 스크랩 count + 1
+        post.setScrapCount(post.getScrapCount()+1);
+        postRepository.save(post);
+
         postScrapRepository.save(postScrap);
     }
 
@@ -36,6 +41,11 @@ public class PostScrapService {
                 .orElseThrow(() -> new RuntimeException("Error : post is not found"));
         PostScrap postScrap = postScrapRepository.findByUserAndPost(user, post)
                 .orElseThrow(() -> new RuntimeException("Error : postScrap is not found"));
+
+        // 스크랩 count -1
+        post.setScrapCount(post.getScrapCount()-1);
+        postRepository.save(post);
+
         postScrapRepository.delete(postScrap);
     }
 

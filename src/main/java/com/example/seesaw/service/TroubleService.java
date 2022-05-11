@@ -135,11 +135,11 @@ public class TroubleService {
         }
     }
 
-    //USER가 작성한 고민리스트 찾기
-    public UserTroubleResponseDto findTroubles(User user) {
-        List<Trouble> troubles = troubleRepository.findAllByUserId(user.getId());
-        return new UserTroubleResponseDto((long) troubles.size(), troubles);
-    }
+//    //내가 작성한 고민리스트 찾기
+//    public UserTroubleResponseDto findTroubles(User user) {
+//        List<Trouble> troubles = troubleRepository.findAllByUserId(user.getId());
+//        return new UserTroubleResponseDto((long) troubles.size(), troubles);
+//    }
 
     //고민글 유효성 검사
     public void checkTrouble(TroubleRequestDto troubleRequestDto) {

@@ -2,12 +2,14 @@ package com.example.seesaw.service;
 
 import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostResponseDto;
-import com.example.seesaw.model.PostImage;
+import com.example.seesaw.dto.PostScrapSortResponseDto;
 import com.example.seesaw.model.Post;
+import com.example.seesaw.model.PostImage;
 import com.example.seesaw.model.PostTag;
 import com.example.seesaw.model.User;
 import com.example.seesaw.repository.PostImageRepository;
 import com.example.seesaw.repository.PostRepository;
+import com.example.seesaw.repository.PostScrapRepository;
 import com.example.seesaw.repository.PostTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class PostService {
     private final PostImageRepository postImageRepository;
     private final PostTagRepository postTagRepository;
     private final PostS3Service postS3Service;
+    private final PostScrapRepository postScrapRepository;
 
 
     //단어장 작성
@@ -139,6 +143,18 @@ public class PostService {
             postTagRepository.save(postTag);
         }
 
+    }
+
+    // 스크랩 순으로 매인페이지 조회
+    public List<PostScrapSortResponseDto> findAllPosts(){
+        List<Post> posts = postRepository.findAllByOrderByScrapCount();
+
+        List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+        }
+        Collections.reverse(postScrapSortResponseDtos);
+        return postScrapSortResponseDtos;
     }
 
 }
