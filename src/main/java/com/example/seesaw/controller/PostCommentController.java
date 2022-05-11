@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/post/comment")
 public class PostCommentController {
 
     private final PostCommentService postCommentService;
     private final PostCommentLikeService postCommentLikeService;
 
-    @PostMapping("/{postId}")
+    @PostMapping("/api/post/comment/{postId}")
     public ResponseEntity<String> registerPostComment(
             @PathVariable(name = "postId") Long postId,
             @RequestBody PostCommentRequestDto requestDto,
@@ -29,10 +28,10 @@ public class PostCommentController {
 
         postCommentService.registerPostComment(postId, requestDto, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시등록 완료");
+                .body("단어장 예시 등록 완료");
     }
 
-    @PutMapping("/{commentId}")
+    @PutMapping("/api/post/comment/{commentId}")
     public ResponseEntity<String> updatePostComment(
             @PathVariable Long commentId,
             @RequestBody PostCommentRequestDto requestDto,
@@ -40,21 +39,21 @@ public class PostCommentController {
 
         postCommentService.updatePostComment(commentId, requestDto, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시수정 완료");
+                .body("단어장 예시 수정 완료");
     }
 
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/api/post/comment/{commentId}")
     public ResponseEntity<String> deletePostComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         postCommentService.deletePostComment(commentId, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시삭제 완료");
+                .body("단어장 예시 삭제 완료");
     }
 
     @ApiOperation("예시 좋아요")
-    @PostMapping("/{commentId}/like")
+    @PostMapping("/api/post/comment/{commentId}/like")
     public ResponseEntity<String> likeComment(@PathVariable Long commentId) {
 
         postCommentLikeService.likeComment(commentId);
@@ -62,7 +61,7 @@ public class PostCommentController {
     }
 
     @ApiOperation("예시 좋아요 취소")
-    @DeleteMapping("/{commentId}/like")
+    @DeleteMapping("/api/post/comment/{commentId}/like")
     public ResponseEntity<String> unlikeComment(@PathVariable Long commentId) {
 
         postCommentLikeService.unlikeComment(commentId);

@@ -12,8 +12,8 @@ import javax.persistence.*;
 @Entity
 public class PostCommentLike extends Timestamped{
 
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @Column(nullable = false)
     private Long id;
 
     @ManyToOne

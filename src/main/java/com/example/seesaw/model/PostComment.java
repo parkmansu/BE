@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 public class PostComment extends Timestamped {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -26,9 +28,14 @@ public class PostComment extends Timestamped {
     @Column(nullable = false)
     private String nickname;
 
+    @Column
+    private Long likeCount = 0L;
+
     public PostComment(Post post, PostCommentRequestDto requestDto) {
         this.post = post;
         this.comment = requestDto.getComment();
         this.nickname = requestDto.getNickname();
+        this.likeCount = getLikeCount();
     }
+
 }
