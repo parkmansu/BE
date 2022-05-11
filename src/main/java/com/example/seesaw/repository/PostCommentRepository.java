@@ -11,4 +11,5 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
 
     List<PostComment> findAllByPostIdOrderByLikeCountDesc(Long postId);
 
+    List<PostComment> findAllByPostId(Long id);
 }

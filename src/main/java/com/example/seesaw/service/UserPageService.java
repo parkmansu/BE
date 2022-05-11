@@ -24,7 +24,6 @@ public class UserPageService {
     private final PostImageRepository postImageRepository;
     private final PostCommentRepository postCommentRepository;
     private final TroubleRepository troubleRepository;
-    private final PostCommentRepository postCommentRepository;
 
     // 프로필 수정
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {

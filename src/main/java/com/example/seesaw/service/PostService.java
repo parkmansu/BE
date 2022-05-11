@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -223,4 +224,17 @@ public class PostService {
                 .generation(post.getGeneration())
                 .build();
     }
+
+    // 스크랩 순으로 매인페이지 조회
+    public List<PostScrapSortResponseDto> findAllPosts(){
+        List<Post> posts = postRepository.findAllByOrderByScrapCount();
+
+        List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+        }
+        Collections.reverse(postScrapSortResponseDtos);
+        return postScrapSortResponseDtos;
+    }
+
 }
