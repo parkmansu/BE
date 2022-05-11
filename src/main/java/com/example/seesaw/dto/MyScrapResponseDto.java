@@ -23,7 +23,7 @@ public class MyScrapResponseDto {
         this.title = post.getTitle();
 //        this.views = post.getViews();   // 아직 테이블에 없음
         this.scrapCount = scrapCount;
-        this.commentCount = commentCount; 
+        this.commentCount = commentCount;
         this.mainImage = postImage.getPostImages();
     }
 }

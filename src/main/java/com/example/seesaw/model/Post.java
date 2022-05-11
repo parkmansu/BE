@@ -15,8 +15,8 @@ import java.util.List;
 @Entity
 public class Post extends Timestamped {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
     private Long id;
 
     @Column(nullable = false)
@@ -25,11 +25,14 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @Column(nullable = false)
+    @Column
     private String videoUrl;
 
     @Column(nullable = false)
     private String generation;
+
+    @Column
+    private int scrapCount;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column

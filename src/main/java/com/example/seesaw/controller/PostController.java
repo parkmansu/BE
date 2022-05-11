@@ -3,6 +3,7 @@ package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostResponseDto;
+import com.example.seesaw.dto.PostScrapSortResponseDto;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostScrapService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,5 +83,13 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 사전 글 전체 조회 (메인페이지)
+    @GetMapping("/api/main")
+    public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
+        List<PostScrapSortResponseDto> postAllResponseDtos = postService.findAllPosts();
+
+        return ResponseEntity.ok()
+                .body(postAllResponseDtos);
+    }
 
 }
