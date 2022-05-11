@@ -69,10 +69,18 @@ public class TroubleController {
                 .body(troubleDetailResponseDto);
     }
 
-    //고민글 조회
+    //고민글 전체 조회(최근 작성 순)
     @GetMapping("api/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findDetailTrouble(){
+    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
         List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+        return ResponseEntity.ok()
+                .body(troubleAllResponseDto);
+    }
+
+    //고민글 전체 조회(조회수 순)
+    @GetMapping("api/main/trouble/list")
+    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
         return ResponseEntity.ok()
                 .body(troubleAllResponseDto);
     }
