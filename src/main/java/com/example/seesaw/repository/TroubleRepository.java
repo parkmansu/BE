@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface TroubleRepository extends JpaRepository<Trouble, Long> {
     List<Trouble> findAllByUserId(Long id);
+
+    List<Trouble> findAllByOrderByCreatedAtDesc();
+
+    List<Trouble> findAllByOrderByViewsDesc();
 }

@@ -1,16 +1,5 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.ProfileListDto;
-import com.example.seesaw.dto.ProfileRequestDto;
-import com.example.seesaw.dto.ProfileResponseDto;
-import com.example.seesaw.model.TroubleComment;
-import com.example.seesaw.model.UserProfile;
-import com.example.seesaw.model.UserProfileNum;
-import com.example.seesaw.repository.TroubleCommentRepository;
-import com.example.seesaw.repository.UserProfileNumRepository;
-import com.example.seesaw.repository.UserProfileRepository;
-import com.example.seesaw.model.User;
-import com.example.seesaw.repository.UserRepository;
 import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
@@ -30,12 +19,12 @@ public class UserPageService {
     private final UserProfileNumRepository userProfileNumRepository;
     private final TroubleCommentRepository troubleCommentRepository;
 
-    private final ScrapRepository scrapRepository;
+    private final PostScrapRepository postScrapRepository;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final PostCommentRepository postCommentRepository;
     private final TroubleRepository troubleRepository;
     private final PostCommentRepository postCommentRepository;
-
 
     // 프로필 수정
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
@@ -86,7 +75,7 @@ public class UserPageService {
 
     // 내가 스크랩한 게시물 조회 (마이페이지)
     public List<MyScrapResponseDto> getMyScraps(User user) {
-        List<PostScrap> postScraps = scrapRepository.findAllByUserId(user.getId());
+        List<PostScrap> postScraps = postScrapRepository.findAllByUserId(user.getId());
         List<Post> posts = postRepository.findAll();
 
         List<MyScrapResponseDto> myScrapResponseDtos = new ArrayList<>();
@@ -100,8 +89,11 @@ public class UserPageService {
                     // 첫번째 이미지만 가져오기
                     PostImage postImage = postImages.get(0);
                     // 일치한 postId에 해당하는 scrap 횟수만 가져오기
-                    List<PostScrap> scraps = scrapRepository.findAllByPostId(post.getId());
-                    myScrapResponseDtos.add(new MyScrapResponseDto(postScrap, post, scraps.size(), postImage));
+                    List<PostScrap> scraps = postScrapRepository.findAllByPostId(post.getId());
+                    // 일치한 postId 에 해당하는 comment 개수만 가져오기
+                    List<PostComment> comments = postCommentRepository.findAllByPostId(post.getId());
+                    myScrapResponseDtos.add(new MyScrapResponseDto(postScrap, post, scraps.size(),
+                            comments.size(),postImage));
                 }
             }
         }

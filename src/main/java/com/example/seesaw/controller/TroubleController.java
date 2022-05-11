@@ -1,5 +1,6 @@
 package com.example.seesaw.controller;
 
+import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleRequestDto;
 import com.example.seesaw.dto.TroubleResponseDto;
@@ -25,7 +26,7 @@ public class TroubleController {
     @PostMapping("/api/trouble")
     public ResponseEntity<String> registerTrouble(
             @RequestPart(value = "troubleRequestDto") TroubleRequestDto troubleRequestDto,
-            @RequestPart(value = "files") List<MultipartFile> files,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         troubleService.registerTrouble(troubleRequestDto, files, userDetails.getUser());
@@ -66,5 +67,21 @@ public class TroubleController {
         TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId);
         return ResponseEntity.ok()
                 .body(troubleDetailResponseDto);
+    }
+
+    //고민글 전체 조회(최근 작성 순)
+    @GetMapping("api/trouble/list")
+    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+        return ResponseEntity.ok()
+                .body(troubleAllResponseDto);
+    }
+
+    //고민글 전체 조회(조회수 순)
+    @GetMapping("api/main/trouble/list")
+    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
+        return ResponseEntity.ok()
+                .body(troubleAllResponseDto);
     }
 }
