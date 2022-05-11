@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class TroubleLike extends Timestamped{
+public class TroubleLike{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;

@@ -26,7 +26,7 @@ public class TroubleController {
     @PostMapping("/api/trouble")
     public ResponseEntity<String> registerTrouble(
             @RequestPart(value = "troubleRequestDto") TroubleRequestDto troubleRequestDto,
-            @RequestPart(value = "files") List<MultipartFile> files,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         troubleService.registerTrouble(troubleRequestDto, files, userDetails.getUser());
