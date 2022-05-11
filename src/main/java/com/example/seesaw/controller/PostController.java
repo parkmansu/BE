@@ -41,7 +41,7 @@ public class PostController {
     }
 
     // 단어 중복 확인
-    @GetMapping("/api/post/{title}/present")
+    @PostMapping("/api/post/{title}/present")
     public ResponseEntity<Boolean> wordCheck(@PathVariable String title) {
         return ResponseEntity.ok(postService.wordCheck(title));
     }
