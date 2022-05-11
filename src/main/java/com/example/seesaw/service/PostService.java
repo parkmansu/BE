@@ -5,6 +5,9 @@ import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -124,23 +127,18 @@ public class PostService {
     }
 
     // 단어 상세 보기.
-    public PostDetailResponseDto findDetailPost(Long postId) {
+    public PostDetailResponseDto findDetailPost(Long postId, int page) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
         PostResponseDto postResponseDto = postTagAndImages(postId);
 
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
-        postDetailResponseDto.setLastNickname(post.getUser().getNickname());
+        postDetailResponseDto.setNickname(post.getUser().getNickname());
         postDetailResponseDto.setTitle(post.getTitle());
         postDetailResponseDto.setContents(post.getContents());
         postDetailResponseDto.setGeneration(post.getGeneration());
         postDetailResponseDto.setVideoUrl(post.getVideoUrl());
-        postDetailResponseDto.setScrapCount(post.getScrapCount());
-
-        User user1 = getCurrentUser();
-        postDetailResponseDto.setNickname(user1.getNickname());
-
         postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
         postDetailResponseDto.setPostTime(postTime);
@@ -148,10 +146,17 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
-        List<PostComment> postComments = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId);
+        // paging 처리
+        Pageable pageable = PageRequest.of(page-1, 4);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
+
+        // 댓글 개수
+        List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
         postDetailResponseDto.setCommentCount((long) postComments.size());
+
+
         List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
-        for(PostComment postComment:postComments){
+        for(PostComment postComment:postCommentPage){
             PostCommentRequestDto postCommentRequestDto = new PostCommentRequestDto(postComment);
             User user = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
