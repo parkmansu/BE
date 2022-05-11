@@ -26,15 +26,10 @@ public class TroubleService {
     //Trouble 글 등록
     public void registerTrouble(TroubleRequestDto troubleRequestDto, List<MultipartFile> files, User user) {
         checkTrouble(troubleRequestDto);
-        String name = null;
-        for(MultipartFile file:files){
-            name = file.getOriginalFilename();
-            System.out.println("file이름은~~~:" + name);
-        }
-
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("")) {
-            imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+
+        if(files == null){
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }
@@ -70,9 +65,7 @@ public class TroubleService {
 
 
         List<TroubleTag> troubleTags = troubleTagRepository.findAllByTroubleId(troubleId);
-        if (troubleTags.isEmpty()){
-            throw new IllegalArgumentException("고민 Id에 해당하는 테그가 없습니다.");
-        }
+
         List<String> gomiTagList = new ArrayList<>();
         for(TroubleTag troubleTag : troubleTags){
             gomiTagList.add(troubleTag.getTagName());
@@ -110,7 +103,7 @@ public class TroubleService {
 
         List<String> imagePaths = new ArrayList<>();
         if (name.equals("") && troubleRequestDto.getImageUrls().get(0).isEmpty()) {
-            imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
             troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(!name.equals("")) {
