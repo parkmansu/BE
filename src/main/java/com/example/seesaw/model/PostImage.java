@@ -21,7 +21,6 @@ public class PostImage {
     @Column(columnDefinition = "TEXT")
     private String postImages;
 
-
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "postid", nullable = false)
     private Post post;

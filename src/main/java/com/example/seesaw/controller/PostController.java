@@ -1,8 +1,9 @@
 package com.example.seesaw.controller;
 
 
+import com.example.seesaw.dto.PostDetailResponseDto;
 import com.example.seesaw.dto.PostRequestDto;
-import com.example.seesaw.dto.PostResponseDto;
+import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostScrapService;
@@ -29,7 +30,7 @@ public class PostController {
     //단어 등록
     @PostMapping(value = "/api/post", headers = ("content-type=multipart/*"))
     public ResponseEntity<String> createPost(
-            @RequestPart("com") PostRequestDto requestDto,
+            @RequestPart("postRequestDto") PostRequestDto requestDto,
             @RequestPart("files") ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -39,7 +40,7 @@ public class PostController {
     }
 
     // 단어 중복 확인
-    @GetMapping("/api/post/{title}/present")
+    @PostMapping("/api/post/{title}/present")
     public ResponseEntity<Boolean> wordCheck(@PathVariable String title) {
         return ResponseEntity.ok(postService.wordCheck(title));
     }
@@ -49,11 +50,10 @@ public class PostController {
     public ResponseEntity<String> updatePost(
             @PathVariable Long postId,
             @RequestPart(value = "postRequestDto") PostRequestDto requestDto,
-            @RequestPart(value = "postResponseDto") PostResponseDto responseDto,
-            @RequestPart(value = "file", required = false) ArrayList<MultipartFile> files,
+            @RequestPart(value = "files", required = false) ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        postService.updatePost(postId, requestDto, responseDto, files, userDetails.getUser());
+        postService.updatePost(postId, requestDto, files, userDetails.getUser());
         return ResponseEntity.ok()
                 .body("단어장 수정완료.");
     }
@@ -66,20 +66,27 @@ public class PostController {
                 .body("고민글 삭제완료");
     }
 
+    //고민글 상세조회
+    @GetMapping("api/post/{postId}/detail")
+    public ResponseEntity<PostDetailResponseDto> findDetailPost(@PathVariable Long postId){
+        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId);
+        return ResponseEntity.ok()
+                .body(postDetailResponseDto);
+    }
+
     //단어장 스크랩
     @ApiOperation("단어장 스크랩")
-    @PostMapping("/{postId}/scrap")
+    @PostMapping("/api/post/{postId}/scrap")
     public ResponseEntity<String> scrapPost(@PathVariable Long postId) {
         postScrapService.scrapPost(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation("단어장 스크랩 취소")
-    @DeleteMapping("/{postId}/scrap")
+    @DeleteMapping("/api/post/{postId}/scrap")
     public ResponseEntity<String> unScrapPost(@PathVariable Long postId) {
         postScrapService.unScrapPost(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }

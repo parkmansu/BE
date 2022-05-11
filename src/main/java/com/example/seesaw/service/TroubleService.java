@@ -68,7 +68,6 @@ public class TroubleService {
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
 
-
         List<TroubleTag> troubleTags = troubleTagRepository.findAllByTroubleId(troubleId);
         if (troubleTags.isEmpty()){
             throw new IllegalArgumentException("고민 Id에 해당하는 테그가 없습니다.");
@@ -101,6 +100,7 @@ public class TroubleService {
             throw new IllegalArgumentException("작성자가 아니므로 고민글 수정이 불가합니다.");
         }
         checkTrouble(troubleRequestDto);
+
         String name = null;
         for(MultipartFile file:files){
             name = file.getOriginalFilename();
@@ -111,11 +111,13 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
         if (name.equals("") && troubleRequestDto.getImageUrls().get(0).isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(!name.equals("")) {
             imagePaths.addAll(troubleS3Service.update(troubleId, troubleRequestDto.getImageUrls(), files));
         } else{
             imagePaths = troubleRequestDto.getImageUrls();
+            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         }
 

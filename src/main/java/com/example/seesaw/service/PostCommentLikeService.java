@@ -29,6 +29,7 @@ public class PostCommentLikeService {
                 .orElseThrow(() -> new RuntimeException("Error : postComment is not found"));
         PostCommentLike postCommentLike = new PostCommentLike(postComment, user);
         postCommentLikeRepository.save(postCommentLike);
+        postComment.setLikeCount(postComment.getLikeCount()+1);
     }
     // 예시 좋아요 취소
     @Transactional
@@ -39,6 +40,7 @@ public class PostCommentLikeService {
         PostCommentLike postCommentLike = postCommentLikeRepository.findByUserAndPostComment(user, postComment)
                 .orElseThrow(() -> new RuntimeException("Error : commentLike is not found"));
         postCommentLikeRepository.delete(postCommentLike);
+        postComment.setLikeCount(postComment.getLikeCount()-1);
     }
 
     // 현재 사용자 정보(토큰에 있는 정보를 활용?!) //https://00hongjun.github.io/spring-security/securitycontextholder/ 참고.

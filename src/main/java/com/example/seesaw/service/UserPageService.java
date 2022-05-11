@@ -34,6 +34,7 @@ public class UserPageService {
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     private final TroubleRepository troubleRepository;
+    private final PostCommentRepository postCommentRepository;
 
 
     // 프로필 수정
@@ -46,11 +47,11 @@ public class UserPageService {
             troubleComment.setNickname(profileRequestDto.getNickname());
             troubleCommentRepository.save(troubleComment);
         }
-//        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
-//        for(PostComment postComment:postComments){
-//            postComment.setNickname(profileRequestDto.getNickname());
-//            postCommentRepository.save(postComment);
-//        }
+        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
+        for(PostComment postComment:postComments){
+            postComment.setNickname(profileRequestDto.getNickname());
+            postCommentRepository.save(postComment);
+        }
         user.setNickname(nickname);
         userRepository.save(user);
 

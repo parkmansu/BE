@@ -11,4 +11,5 @@ public interface PostTagRepository extends JpaRepository<PostTag, Long> {
     @Transactional
     void deleteAllByPostId(Long postId);
 
+    List<PostTag> findAllByPostId(Long postId);
 }

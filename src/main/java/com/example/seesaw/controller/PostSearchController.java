@@ -1,9 +1,12 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.model.Post;
-import com.example.seesaw.repository.PostRepository;
+import com.example.seesaw.dto.PostSearchResponseDto;
+import com.example.seesaw.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -13,11 +16,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostSearchController {
 
-    private final PostRepository postRepository;
+
+    private final PostService postService;
 
     // 검색
     @GetMapping("/api/post/search")
-    public List<Post> search(String keyword) {
-        return postRepository.findByTitleContainingOrContentsContaining(keyword, keyword);
+    public ResponseEntity<List<PostSearchResponseDto>> search(@RequestParam(value = "keyword") String keyword, Model model) {
+        List<PostSearchResponseDto> searchList = postService.searchPosts(keyword, keyword);
+        model.addAttribute("searchList",searchList);
+        return ResponseEntity.ok()
+                .body(searchList);
     }
 }
