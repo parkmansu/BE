@@ -168,6 +168,7 @@ public class UserService {
     public List<ProfileListDto> findUserProfiles(User user){
 
         List<UserProfileNum> userProfileNums = userProfileNumRepository.findAllByUserId(user.getId());
+        System.out.println("userId   "+ user.getId());
         if(userProfileNums.isEmpty()){
             throw new IllegalArgumentException("저장된 userProfileId 가 없습니다.");
         }

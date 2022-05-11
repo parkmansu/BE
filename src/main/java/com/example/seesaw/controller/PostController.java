@@ -70,8 +70,9 @@ public class PostController {
 
     //고민글 상세조회
     @GetMapping("api/post/{postId}/detail")
-    public ResponseEntity<PostDetailResponseDto> findDetailPost(@PathVariable Long postId){
-        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId);
+    public ResponseEntity<PostDetailResponseDto> findDetailPost(
+            @RequestParam int page, @PathVariable Long postId){
+        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId, page);
         return ResponseEntity.ok()
                 .body(postDetailResponseDto);
     }

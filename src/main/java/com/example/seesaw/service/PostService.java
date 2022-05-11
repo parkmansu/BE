@@ -5,6 +5,10 @@ import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -123,7 +127,7 @@ public class PostService {
     }
 
     // 단어 상세 보기.
-    public PostDetailResponseDto findDetailPost(Long postId) {
+    public PostDetailResponseDto findDetailPost(Long postId, int page) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
@@ -142,10 +146,13 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
-        List<PostComment> postComments = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId);
-        postDetailResponseDto.setCommentCount((long) postComments.size());
+        Pageable pageable = PageRequest.of(page-1, 4);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId, pageable);
+        List<PostComment> postCommentList = postCommentRepository.findAllByPostId(postId);
+        postDetailResponseDto.setCommentCount((long) postCommentList.size());
+
         List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
-        for(PostComment postComment:postComments){
+        for(PostComment postComment:postCommentPage){
             PostCommentRequestDto postCommentRequestDto = new PostCommentRequestDto(postComment);
             User user = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
