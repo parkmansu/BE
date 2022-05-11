@@ -94,19 +94,15 @@ public class TroubleService {
             throw new IllegalArgumentException("작성자가 아니므로 고민글 수정이 불가합니다.");
         }
         checkTrouble(troubleRequestDto);
-        String name = null;
-        for(MultipartFile file:files){
-            name = file.getOriginalFilename();
-            System.out.println("file이름은~~~:" + name);
-        }
+
         trouble.update(troubleRequestDto);
 
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("") && troubleRequestDto.getImageUrls().get(0).isEmpty()) {
+        if(files == null && troubleRequestDto.getImageUrls().isEmpty()){
             imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
             troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
-        } else if(!name.equals("")) {
+        } else if(files!=null) {
             imagePaths.addAll(troubleS3Service.update(troubleId, troubleRequestDto.getImageUrls(), files));
         } else{
             imagePaths = troubleRequestDto.getImageUrls();
@@ -186,11 +182,11 @@ public class TroubleService {
             throw new IllegalArgumentException("작성된 고민글이 없습니다.");
         }
         List<TroubleAllResponseDto> troubleAllResponseDtos = new ArrayList<>();
-        long id = 0L;
+
         for(Trouble trouble:troubles){
             TroubleResponseDto troubleResponseDto = findTrouble(trouble.getId());
             TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleResponseDto);
-            troubleAllResponseDto.setId(++id);
+            troubleAllResponseDto.setId(trouble.getId());
             troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
             troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
             String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
