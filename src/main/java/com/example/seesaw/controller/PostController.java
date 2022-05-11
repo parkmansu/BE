@@ -33,7 +33,7 @@ public class PostController {
     @PostMapping(value = "/api/post", headers = ("content-type=multipart/*"))
     public ResponseEntity<String> createPost(
             @RequestPart("postRequestDto") PostRequestDto requestDto,
-            @RequestPart("files") ArrayList<MultipartFile> files,
+            @RequestPart(value = "files", required = false) ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         postService.createPost(requestDto, files, userDetails.getUser());
