@@ -1,5 +1,6 @@
 package com.example.seesaw.controller;
 
+import com.example.seesaw.dto.PostSearchDto;
 import com.example.seesaw.dto.PostSearchResponseDto;
 import com.example.seesaw.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,10 @@ public class PostSearchController {
 
     // 검색
     @GetMapping("/api/post/search")
-    public ResponseEntity<List<PostSearchResponseDto>> search(@RequestParam(value = "keyword") String keyword, Model model) {
-        List<PostSearchResponseDto> searchList = postService.searchPosts(keyword, keyword);
-        model.addAttribute("searchList",searchList);
+    public ResponseEntity<PostSearchDto> search(@RequestParam(value = "keyword") String keyword) {
+        PostSearchDto searchList = postService.searchPosts(keyword, keyword);
+
+        //List<PostSearchResponseDto> searchList = postService.searchPosts(keyword, keyword);
         return ResponseEntity.ok()
                 .body(searchList);
     }
