@@ -70,7 +70,8 @@ public class PostController {
 
     //고민글 상세조회
     @GetMapping("api/post/{postId}/detail")
-    public ResponseEntity<PostDetailResponseDto> findDetailPost(@PathVariable Long postId){
+    public ResponseEntity<PostDetailResponseDto> findDetailPost(
+            @PathVariable Long postId){
         PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId);
         return ResponseEntity.ok()
                 .body(postDetailResponseDto);
@@ -90,6 +91,7 @@ public class PostController {
         postScrapService.unScrapPost(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     // 사전 글 전체 조회 (메인페이지)
     @GetMapping("/api/main")

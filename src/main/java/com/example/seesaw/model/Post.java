@@ -1,6 +1,5 @@
 package com.example.seesaw.model;
 
-import com.example.seesaw.dto.PostDetailResponseDto;
 import com.example.seesaw.dto.PostRequestDto;
 import lombok.Builder;
 import lombok.Getter;
