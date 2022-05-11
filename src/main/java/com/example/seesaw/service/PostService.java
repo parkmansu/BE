@@ -203,25 +203,32 @@ public class PostService {
     }
 
     @Transactional
-    public List<PostSearchResponseDto> searchPosts(String title, String contents) {
+    public PostSearchDto searchPosts(String title, String contents) {
         List<Post> posts = postRepository.findByTitleContainingOrContentsContaining(title,contents);
         List<PostSearchResponseDto> searchList = new ArrayList<>();
-
+        PostSearchDto postSearchList = new PostSearchDto();
         if (posts.isEmpty())
-            return searchList;
+            return postSearchList;
 
         for (Post post : posts) {
             searchList.add(this.convertEntityToDto(post));
         }
-        return searchList;
+        Long size = (long) searchList.size();
+        postSearchList.setListCount(size);
+        postSearchList.setPostSearchList(searchList);
+
+        return postSearchList;
     }
     private PostSearchResponseDto convertEntityToDto(Post post) {
+        List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
 
         return PostSearchResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .contents(post.getContents())
                 .generation(post.getGeneration())
+                .imageCount((long)post.getPostImages().size())
+                .commentCount((long)postComments.size())
                 .build();
     }
 
