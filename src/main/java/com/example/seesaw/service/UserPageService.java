@@ -35,11 +35,11 @@ public class UserPageService {
             troubleComment.setNickname(profileRequestDto.getNickname());
             troubleCommentRepository.save(troubleComment);
         }
-//        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
-//        for(PostComment postComment:postComments){
-//            postComment.setNickname(profileRequestDto.getNickname());
-//            postCommentRepository.save(postComment);
-//        }
+        List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
+        for(PostComment postComment:postComments){
+            postComment.setNickname(profileRequestDto.getNickname());
+            postCommentRepository.save(postComment);
+        }
         user.setNickname(nickname);
         userRepository.save(user);
 

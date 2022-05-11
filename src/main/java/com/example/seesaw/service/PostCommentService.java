@@ -18,6 +18,7 @@ public class PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
 
+    // 댓글 등록
     public void registerPostComment(Long postId, PostCommentRequestDto requestDto, User user) {
         User commentUser = userRepository.findById(user.getId()).orElseThrow(
                 () -> new IllegalStateException("해당하는 USER 가 없습니다.")
@@ -29,6 +30,7 @@ public class PostCommentService {
         postCommentRepository.save(postComment);
     }
 
+    // 댓글 수정
     public void updatePostComment(Long commentId, PostCommentRequestDto requestDto, User user) {
         PostComment postComment = checkCommentUser(commentId, user);
         postComment.setNickname(user.getNickname());
@@ -36,11 +38,12 @@ public class PostCommentService {
         postCommentRepository.save(postComment);
     }
 
+    // 댓글 삭제
     public void deletePostComment(Long commentId, User user) {
         checkCommentUser(commentId, user);
         postCommentRepository.deleteById(commentId);
     }
-
+    // 댓글 유저 확인
     public PostComment checkCommentUser(Long commentId, User user){
         User commentUser = userRepository.findById(user.getId()).orElseThrow(
                 () -> new IllegalStateException("해당하는 USER 가 없습니다.")

@@ -16,6 +16,7 @@ public class PostResponseDto {
     private List<String> tagNames;
     private String videoUrl;
     private String generation;
+    private String user;
 
     public PostResponseDto(Post post, List<String> postImages, List<String> tagNames) {
         this.title = post.getTitle();
@@ -24,5 +25,6 @@ public class PostResponseDto {
         this.videoUrl = post.getVideoUrl();
         this.tagNames = tagNames;
         this.generation = post.getGeneration();
+        this.user = post.getUser().getNickname();
     }
 }
