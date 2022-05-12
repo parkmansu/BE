@@ -4,7 +4,6 @@ package com.example.seesaw.controller;
 import com.example.seesaw.dto.PostDetailResponseDto;
 import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostScrapSortResponseDto;
-import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostScrapService;
@@ -91,9 +90,8 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    // 사전 글 전체 조회 (메인페이지)
-    @GetMapping("/api/main")
+    // 사전 글 스크랩순으로 16개 조회 (메인페이지)
+    @GetMapping("/api/main/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
         List<PostScrapSortResponseDto> postAllResponseDtos = postService.findAllPosts();
 
