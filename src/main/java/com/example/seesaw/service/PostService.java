@@ -5,6 +5,9 @@ import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,18 +32,12 @@ public class PostService {
     private final UserRepository userRepository;
 
     //단어장 작성
-    @Transactional
     public void createPost(PostRequestDto requestDto, List<MultipartFile> files, User user) {
 
         // 단어장 작성시 이미지파일 없이 등록시 기본 이미지 파일로 올리기!
-        String name = null;
-        for(MultipartFile file:files){
-            name = file.getOriginalFilename();
-            System.out.println("file이름은~~~:" + name);
-        }
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("")) {
-            imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+        if (files == null) {
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
         } else {
             imagePaths.addAll(postS3Service.upload(files));
 
@@ -54,7 +51,7 @@ public class PostService {
         // generation
         String generation = requestDto.getGeneration();
         // 태그
-        List<String> tagName = requestDto.getTagNames();
+        List<String> tagNames = requestDto.getTagNames();
 
         if (title == null) {
             throw new IllegalArgumentException("등록할 단어를 적어주세요.");
@@ -63,27 +60,21 @@ public class PostService {
         }
 
         //post 저장
-        Post post = new Post(title, contents, videoUrl, generation, user);
+        Post post = new Post(title, contents, videoUrl, generation, user, 0);
         postRepository.save(post);
 
         //이미지 URL 저장하기
-        List<String> images = new ArrayList<>();
         for(String imageUrl : imagePaths){
             PostImage postImage = new PostImage(imageUrl, post);
             postImageRepository.save(postImage);
-            images.add(postImage.getPostImages());
         }
-
         // tag 저장하기.
-        List<String> tags = new ArrayList<>();
-        for(String tagNames : tagName){
-            PostTag postTag = new PostTag(tagNames, post);
-            postTagRepository.save(postTag);
-            tags.add(postTag.getTagName());
+        for(String tagName : tagNames){
+            if(!tagName.equals("")){
+                PostTag postTag = new PostTag(tagName, post);
+                postTagRepository.save(postTag);
+            }
         }
-
-        //return 값 생성
-        new PostResponseDto(post, images, tags);
     }
 
     // 중복체크
@@ -103,20 +94,14 @@ public class PostService {
         //post update
         post.update(requestDto, user);
 
-        // 이미지 name 확인
-        String name = null;
-        for(MultipartFile file:files){
-            name = file.getOriginalFilename();
-            System.out.println("file이름은~~~:" + name);
-        }
 
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
-        if (name.equals("") && requestDto.getPostImages().get(0).isEmpty()) {
+        if (files==null && requestDto.getPostImages().isEmpty()) {
             imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
             postS3Service.delete(postId, requestDto.getPostImages());
             postImageRepository.deleteAllByPostId(postId);
-        } else if(!name.equals("")) {
+        } else if(files!=null) {
             imagePaths.addAll(postS3Service.update(postId, requestDto.getPostImages(), files));
         } else{
             imagePaths = requestDto.getPostImages();
@@ -142,23 +127,18 @@ public class PostService {
     }
 
     // 단어 상세 보기.
-    public PostDetailResponseDto findDetailPost(Long postId) {
+    public PostDetailResponseDto findDetailPost(Long postId, int page) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
         PostResponseDto postResponseDto = postTagAndImages(postId);
 
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
-        postDetailResponseDto.setLastNickname(post.getUser().getNickname());
+        postDetailResponseDto.setNickname(post.getUser().getNickname());
         postDetailResponseDto.setTitle(post.getTitle());
         postDetailResponseDto.setContents(post.getContents());
         postDetailResponseDto.setGeneration(post.getGeneration());
         postDetailResponseDto.setVideoUrl(post.getVideoUrl());
-        postDetailResponseDto.setScrapCount(post.getScrapCount());
-
-        User user1 = getCurrentUser();
-        postDetailResponseDto.setNickname(user1.getNickname());
-
         postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
         postDetailResponseDto.setPostUpdateTime(postTime);
@@ -166,10 +146,17 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
-        List<PostComment> postComments = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId);
+        // paging 처리
+        Pageable pageable = PageRequest.of(page-1, 4);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
+
+        // 댓글 개수
+        List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
         postDetailResponseDto.setCommentCount((long) postComments.size());
+
+
         List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
-        for(PostComment postComment:postComments){
+        for(PostComment postComment:postCommentPage){
             PostCommentRequestDto postCommentRequestDto = new PostCommentRequestDto(postComment);
             User user = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
@@ -250,28 +237,61 @@ public class PostService {
     }
 
 
-
     // 최신순으로 단어 리스트 페이지 조회
     public List<PostListResponseDto> findListPosts(){
-        List<Post> posts = postRepository.findAllByOrderByCreatedAt();
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
-            postListResponseDtos.add(new PostListResponseDto(post));
+
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String postImageUrl = "";
+            for (PostImage postImage : postImages) {
+                postImageUrl = postImage.getPostImages();
+            }
+            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            Collections.reverse(postListResponseDtos);
         }
-        Collections.reverse(postListResponseDtos);
         return postListResponseDtos;
     }
 
     // 스크랩 순으로 매인페이지 조회
     public List<PostScrapSortResponseDto> findAllPosts(){
-        List<Post> posts = postRepository.findAllByOrderByScrapCount();
-
+        // 스크랩 수가 많은 순서대로 16개의 post를 담는다.
+        List<Post> posts = postRepository.findTop16ByOrderByScrapCountDesc();
+        // 리스트 형태 Dto 타입 빈 객체 생성
         List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        // posts 하나씩 꺼내어 처리
         for (Post post: posts) {
-            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+            // postId 에 해당하는 post image 를 가져온다.
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String imageUrl = "";
+            for (PostImage postImage: postImages
+                 ) {
+                // 하나만 뽑아서 break
+                imageUrl = postImage.getPostImages();
+                break;
+            }
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post, imageUrl));
         }
-        Collections.reverse(postScrapSortResponseDtos);
+
         return postScrapSortResponseDtos;
+    }
+
+    // 9개 단어 최신순으로 단어 메인 리스트 페이지 조회
+    public List<PostListResponseDto> findMainListPosts(){
+        List<Post> posts = postRepository.findTop9ByOrderByCreatedAtDesc();
+        List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String postImageUrl = "";
+            for (PostImage postImage : postImages) {
+                postImageUrl = postImage.getPostImages();
+            }
+            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            Collections.reverse(postListResponseDtos);
+        }
+        return postListResponseDtos;
     }
 
 }

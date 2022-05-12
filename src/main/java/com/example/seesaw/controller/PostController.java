@@ -65,11 +65,12 @@ public class PostController {
                 .body("고민글 삭제완료");
     }
 
-    //고민글 상세조회
+    //단어장 상세조회
     @GetMapping("api/post/{postId}/detail")
     public ResponseEntity<PostDetailResponseDto> findDetailPost(
+            @RequestParam(value = "page") int page,
             @PathVariable Long postId){
-        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId);
+        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId, page);
         return ResponseEntity.ok()
                 .body(postDetailResponseDto);
     }
@@ -99,13 +100,25 @@ public class PostController {
     }
 
 
-    // 사전 글 전체 조회 (메인페이지)
-    @GetMapping("/api/main")
+    // 사전 글 스크랩순으로 16개 조회 (메인페이지)
+    @GetMapping("/api/main/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
         List<PostScrapSortResponseDto> postAllResponseDtos = postService.findAllPosts();
 
         return ResponseEntity.ok()
                 .body(postAllResponseDtos);
     }
+
+    // 사전 글 스크랩순으로 9개 조회 (메인페이지)
+    @GetMapping("/api/main/postList")
+    public ResponseEntity<List<PostListResponseDto>> getMainListPosts(){
+        List<PostListResponseDto> postListResponseDtos = postService.findMainListPosts();
+
+        return ResponseEntity.ok()
+                .body(postListResponseDtos);
+    }
+
+
+
 
 }

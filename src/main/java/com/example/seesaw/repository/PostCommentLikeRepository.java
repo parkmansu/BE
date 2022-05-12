@@ -11,4 +11,5 @@ public interface PostCommentLikeRepository extends JpaRepository<PostCommentLike
 
     Optional<PostCommentLike> findByUserAndPostComment(User user, PostComment postComment);
 
+    PostCommentLike findByPostCommentAndUserId(PostComment postComment, Long userId);
 }

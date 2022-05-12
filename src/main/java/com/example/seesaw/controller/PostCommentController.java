@@ -52,23 +52,16 @@ public class PostCommentController {
                 .body("단어장 예시 삭제 완료");
     }
 
-    @ApiOperation("예시 좋아요")
-    @PostMapping("/api/post/comment/{commentId}/like")
-    public ResponseEntity<String> likeComment(@PathVariable Long commentId) {
+    @ApiOperation("예시 좋아요/취소")
+    @PostMapping("api/post/comment/{commentId}/like")
+    public boolean getGoods(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        postCommentLikeService.likeComment(commentId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return postCommentLikeService.getPostCommentLikes(commentId, userDetails.getUser());
     }
-
-    @ApiOperation("예시 좋아요 취소")
-    @DeleteMapping("/api/post/comment/{commentId}/like")
-    public ResponseEntity<String> unlikeComment(@PathVariable Long commentId) {
-
-        postCommentLikeService.unlikeComment(commentId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
 }
+
 
 
 

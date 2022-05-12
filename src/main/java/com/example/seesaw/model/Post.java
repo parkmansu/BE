@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 public class Post extends Timestamped {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
@@ -50,13 +50,13 @@ public class Post extends Timestamped {
     private Long views = 0L;
 
 
-    public Post(String title, String contents, String videoUrl, String generation, User user) {
+    public Post(String title, String contents, String videoUrl, String generation, User user, int scrapCount) {
         this.title = title;
         this.contents = contents;
         this.videoUrl = videoUrl;
         this.generation = generation;
         this.user = user;
-
+        this.scrapCount = scrapCount;
     }
 
     @Builder

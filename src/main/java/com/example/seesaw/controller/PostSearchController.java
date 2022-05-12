@@ -23,8 +23,6 @@ public class PostSearchController {
     @GetMapping("/api/post/search")
     public ResponseEntity<PostSearchDto> search(@RequestParam(value = "keyword") String keyword) {
         PostSearchDto searchList = postService.searchPosts(keyword, keyword);
-
-        //List<PostSearchResponseDto> searchList = postService.searchPosts(keyword, keyword);
         return ResponseEntity.ok()
                 .body(searchList);
     }

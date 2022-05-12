@@ -1,13 +1,11 @@
 package com.example.seesaw.model;
 
 import lombok.Getter;
-
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 public class Crossword {
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;

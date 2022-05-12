@@ -14,10 +14,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     boolean existsByTitle(String title);
 
-    List<Post> findAllByOrderByScrapCount();
+    // Top 16개만 스크랩 순으로 가져오기
+    List<Post> findTop16ByOrderByScrapCountDesc();
 
-    List<Post> findAllByOrderByCreatedAt();
+    List<Post> findTop9ByOrderByCreatedAtDesc();
+
+    List<Post> findAllByOrderByScrapCount();
 
     //게임용
     List<Post> findAllById(Long postId);
+
+    List<Post> findAllByOrderByCreatedAtDesc();
 }
