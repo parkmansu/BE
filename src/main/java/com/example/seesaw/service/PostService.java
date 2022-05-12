@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -238,13 +237,24 @@ public class PostService {
 
     // 스크랩 순으로 매인페이지 조회
     public List<PostScrapSortResponseDto> findAllPosts(){
-        List<Post> posts = postRepository.findAllByOrderByScrapCount();
-
+        // 스크랩 수가 많은 순서대로 16개의 post를 담는다.
+        List<Post> posts = postRepository.findTop16ByOrderByScrapCountDesc();
+        // 리스트 형태 Dto 타입 빈 객체 생성
         List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        // posts 하나씩 꺼내어 처리
         for (Post post: posts) {
-            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+            // postId 에 해당하는 post image 를 가져온다.
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String imageUrl = "";
+            for (PostImage postImage: postImages
+                 ) {
+                // 하나만 뽑아서 break
+                imageUrl = postImage.getPostImages();
+                break;
+            }
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post, imageUrl));
         }
-        Collections.reverse(postScrapSortResponseDtos);
+
         return postScrapSortResponseDtos;
     }
 

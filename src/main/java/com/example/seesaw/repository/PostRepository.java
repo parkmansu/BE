@@ -13,9 +13,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByTitleContainingOrContentsContaining(@Param("title") String title, @Param("contents") String contents);
 
     boolean existsByTitle(String title);
+    // Top 16개만 스크랩 순으로 가져오기
+    List<Post> findTop16ByOrderByScrapCountDesc();
 
-    List<Post> findAllByOrderByScrapCount();
-
-    //게임용
-    List<Post> findAllById(Long postId);
 }

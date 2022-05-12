@@ -14,11 +14,17 @@ public class PostScrapSortResponseDto {
 
     private Long postId;
     private String title;
+    private String contents;
+    private String imageUrl;
+    private String generation;
     private int scrapCount;
 
-    public PostScrapSortResponseDto(Post post){
+    public PostScrapSortResponseDto(Post post, String imageUrl){
         this.postId = post.getId();
         this.title = post.getTitle();
+        this.contents = post.getContents();
+        this.imageUrl = imageUrl;
+        this.generation = post.getGeneration();
         this.scrapCount = post.getScrapCount();
     }
 
