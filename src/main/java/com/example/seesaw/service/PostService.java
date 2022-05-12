@@ -161,7 +161,7 @@ public class PostService {
 
         postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
-        postDetailResponseDto.setPostTime(postTime);
+        postDetailResponseDto.setPostUpdateTime(postTime);
         postDetailResponseDto.setViews(post.getViews());
         post.setViews(post.getViews()+1);
         postRepository.save(post);
@@ -174,7 +174,11 @@ public class PostService {
             User user = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
             postCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
+            postCommentRequestDto.setCommentLikeCount(postComment.getLikeCount());
+            String postCommentTime = convertTimeService.convertLocaldatetimeToTime(postComment.getCreatedAt());
+            postCommentRequestDto.setCommentTime(postCommentTime);
             postCommentRequestDtos.add(postCommentRequestDto);
+
         }
         postDetailResponseDto.setPostComments(postCommentRequestDtos);
 

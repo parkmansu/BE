@@ -24,10 +24,11 @@ public class PostDetailResponseDto {
     private String videoUrl;
     private Long views;
     private Long commentCount;
-    private String postTime;
+    private String postUpdateTime;
     private List<PostCommentRequestDto> postComments;
     private int scrapCount;
     private String nickname;
+
 
 
     public PostDetailResponseDto(PostResponseDto responseDto) {

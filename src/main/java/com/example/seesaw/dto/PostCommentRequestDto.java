@@ -18,6 +18,8 @@ public class PostCommentRequestDto {
     private String nickname;
     List<ProfileListDto> ProfileImages;
     private String comment;
+    private Long CommentLikeCount;
+    private String commentTime;
 
 
     public PostCommentRequestDto(PostComment postComment) {
