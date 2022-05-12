@@ -16,6 +16,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByOrderByScrapCount();
 
+    List<Post> findAllByOrderByCreatedAt();
+
     //게임용
     List<Post> findAllById(Long postId);
 }

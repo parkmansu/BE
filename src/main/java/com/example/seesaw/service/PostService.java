@@ -249,6 +249,19 @@ public class PostService {
                 .build();
     }
 
+
+
+    // 최신순으로 단어 리스트 페이지 조회
+    public List<PostListResponseDto> findListPosts(){
+        List<Post> posts = postRepository.findAllByOrderByCreatedAt();
+        List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+            postListResponseDtos.add(new PostListResponseDto(post));
+        }
+        Collections.reverse(postListResponseDtos);
+        return postListResponseDtos;
+    }
+
     // 스크랩 순으로 매인페이지 조회
     public List<PostScrapSortResponseDto> findAllPosts(){
         List<Post> posts = postRepository.findAllByOrderByScrapCount();
